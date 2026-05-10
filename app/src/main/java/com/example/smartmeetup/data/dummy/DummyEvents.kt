@@ -1,15 +1,15 @@
-package com.example.smartmeetup.data.dummy
+package com.example.smartmeetup.data.dummy //mock data for application, build and test the UI (screens, lists, cards) before the app is connected to a real database or server
 
-import com.example.smartmeetup.model.MeetupEvent
+import com.example.smartmeetup.model.MeetupEvent   //definition of what both files look like aka templates pulling in
 import com.example.smartmeetup.model.User
 
-val dummyHost = User(
+val dummyHost = User(    //creates a single user as user class
     id = 1,
     displayName = "Samira",
     username = "@samira"
 )
 
-val dummyParticipants = listOf(
+val dummyParticipants = listOf( //creating a list of participants as user objects grouped
     User(id = 2, displayName = "Ben", username = "@ben"),
     User(id = 3, displayName = "Jonas", username = "@jonas"),
     User(id = 4, displayName = "Mira", username = "@mira"),
@@ -22,7 +22,7 @@ val dummyParticipants = listOf(
     User(id = 11, displayName = "Max", username = "@max")
 )
 
-val dummyEvents = listOf(
+val dummyEvents = listOf(    //list of events that EventListScreen will be using for display as cards
     MeetupEvent(
         id = 123,
         title = "Football in the Park",
@@ -46,7 +46,7 @@ val dummyEvents = listOf(
         endTime = "12:00",
         locationName = "Campus Library",
         host = User(id = 12, displayName = "Marlon", username = "@marlon"),
-        participants = dummyParticipants.take(4),
+        participants = dummyParticipants.take(4),   //takes the first 4 participants from the list
         participantLimit = 8
     ),
     MeetupEvent(
@@ -64,4 +64,4 @@ val dummyEvents = listOf(
     )
 )
 
-val selectedDummyEvent = dummyEvents.first()
+val selectedDummyEvent = dummyEvents.first() //selecting a single event, the first, for display
