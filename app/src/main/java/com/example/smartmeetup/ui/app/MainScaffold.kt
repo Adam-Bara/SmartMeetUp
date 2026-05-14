@@ -1,14 +1,19 @@
 package com.example.smartmeetup.ui.app
 
+// Layout-Imports für Container, Vollbildgröße und Padding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+
+// Icons für die Bottom Navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+
+// Material-3-Komponenten
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,17 +21,24 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+
+// Compose-State und Composable-Funktionen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+
+// Dummy-Daten und Screens der App
 import com.example.smartmeetup.data.dummy.dummyEvents
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 
+// Enum für die verschiedenen Hauptbereiche der App.
+// Jeder Tab besitzt einen Titel, der später z. B. für Labels genutzt werden kann.
 private enum class MainTab(
     val title: String
 ) {
@@ -37,15 +49,22 @@ private enum class MainTab(
     Profile("Profile")
 }
 
+// Aktiviert experimentelle Material-3-APIs, da TopAppBar diese Annotation benötigt.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(
     modifier: Modifier = Modifier
 ) {
+    // Speichert den aktuell ausgewählten Tab.
+    // remember sorgt dafür, dass der Zustand bei Recomposition erhalten bleibt.
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
 
+    // Scaffold stellt die Grundstruktur der App bereit:
+    // TopAppBar, Bottom Navigation und Inhaltsbereich.
     Scaffold(
         modifier = modifier.fillMaxSize(),
+
+        // Obere App-Leiste mit dem App-Namen
         topBar = {
             TopAppBar(
                 title = {
@@ -53,8 +72,11 @@ fun MainScaffold(
                 }
             )
         },
+
+        // Untere Navigation mit den Hauptbereichen der App
         bottomBar = {
             NavigationBar {
+                // Navigationseintrag für die Event-Liste
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Events,
                     onClick = { selectedTab = MainTab.Events },
@@ -69,6 +91,7 @@ fun MainScaffold(
                     }
                 )
 
+                // Navigationseintrag für die Kartenansicht
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Map,
                     onClick = { selectedTab = MainTab.Map },
@@ -83,6 +106,7 @@ fun MainScaffold(
                     }
                 )
 
+                // Navigationseintrag zum Erstellen eines neuen Events
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Create,
                     onClick = { selectedTab = MainTab.Create },
@@ -97,6 +121,7 @@ fun MainScaffold(
                     }
                 )
 
+                // Navigationseintrag für Benachrichtigungen und Updates
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Notifications,
                     onClick = { selectedTab = MainTab.Notifications },
@@ -111,6 +136,7 @@ fun MainScaffold(
                     }
                 )
 
+                // Navigationseintrag für Profil und Einstellungen
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Profile,
                     onClick = { selectedTab = MainTab.Profile },
@@ -127,14 +153,21 @@ fun MainScaffold(
             }
         }
     ) { innerPadding ->
+
+        // Box dient als Container für den eigentlichen Inhalt.
+        // Das Padding verhindert, dass Inhalte unter TopAppBar oder NavigationBar liegen.
         Box(
             modifier = Modifier.padding(innerPadding)
         ) {
+            // Je nach ausgewähltem Tab wird ein anderer Screen angezeigt.
             when (selectedTab) {
+
+                // Zeigt die Event-Liste mit Dummy-Daten an
                 MainTab.Events -> {
                     EventListScreen(events = dummyEvents)
                 }
 
+                // Platzhalter für die spätere Kartenansicht
                 MainTab.Map -> {
                     PlaceholderScreen(
                         title = "Map",
@@ -142,6 +175,7 @@ fun MainScaffold(
                     )
                 }
 
+                // Platzhalter für den Screen zum Erstellen eines Events
                 MainTab.Create -> {
                     PlaceholderScreen(
                         title = "Create event",
@@ -149,6 +183,7 @@ fun MainScaffold(
                     )
                 }
 
+                // Platzhalter für Benachrichtigungen und Erinnerungen
                 MainTab.Notifications -> {
                     PlaceholderScreen(
                         title = "Notifications",
@@ -156,6 +191,7 @@ fun MainScaffold(
                     )
                 }
 
+                // Platzhalter für Profil und Einstellungen
                 MainTab.Profile -> {
                     PlaceholderScreen(
                         title = "Profile",
@@ -167,6 +203,8 @@ fun MainScaffold(
     }
 }
 
+// Preview-Funktion für Android Studio.
+// Damit kann der MainScaffold direkt in der Vorschau angezeigt werden.
 @Preview(showBackground = true)
 @Composable
 fun MainScaffoldPreview() {
