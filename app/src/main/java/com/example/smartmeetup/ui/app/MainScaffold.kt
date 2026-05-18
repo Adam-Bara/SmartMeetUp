@@ -10,8 +10,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Forum
 
 // Material-3-Komponenten
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,9 +44,8 @@ private enum class MainTab(
     val title: String
 ) {
     Events("Events"),
-    Map("Map"),
-    Create("Create"),
-    Notifications("Notifications"),
+    MyEvents("My Events"),
+    Messages("Messages"),
     Profile("Profile")
 }
 
@@ -93,46 +93,31 @@ fun MainScaffold(
 
                 // Navigationseintrag für die Kartenansicht
                 NavigationBarItem(
-                    selected = selectedTab == MainTab.Map,
-                    onClick = { selectedTab = MainTab.Map },
+                    selected = selectedTab == MainTab.MyEvents,
+                    onClick = { selectedTab = MainTab.MyEvents },
                     icon = {
                         Icon(
-                            imageVector = Icons.Default.Map,
-                            contentDescription = "Map"
+                            imageVector = Icons.Default.Bookmark,
+                            contentDescription = "My Events"
                         )
                     },
                     label = {
-                        Text("Map")
+                        Text("My Events")
                     }
                 )
 
                 // Navigationseintrag zum Erstellen eines neuen Events
                 NavigationBarItem(
-                    selected = selectedTab == MainTab.Create,
-                    onClick = { selectedTab = MainTab.Create },
+                    selected = selectedTab == MainTab.Messages,
+                    onClick = { selectedTab = MainTab.Messages },
                     icon = {
                         Icon(
-                            imageVector = Icons.Default.AddCircle,
-                            contentDescription = "Create event"
+                            imageVector = Icons.Default.Forum,
+                            contentDescription = "Messages"
                         )
                     },
                     label = {
-                        Text("Create")
-                    }
-                )
-
-                // Navigationseintrag für Benachrichtigungen und Updates
-                NavigationBarItem(
-                    selected = selectedTab == MainTab.Notifications,
-                    onClick = { selectedTab = MainTab.Notifications },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications"
-                        )
-                    },
-                    label = {
-                        Text("Updates")
+                        Text("Messages")
                     }
                 )
 
@@ -168,7 +153,7 @@ fun MainScaffold(
                 }
 
                 // Platzhalter für die spätere Kartenansicht
-                MainTab.Map -> {
+                MainTab.MyEvents -> {
                     PlaceholderScreen(
                         title = "Map",
                         text = "Here we will show nearby meetup events on a map."
@@ -176,18 +161,10 @@ fun MainScaffold(
                 }
 
                 // Platzhalter für den Screen zum Erstellen eines Events
-                MainTab.Create -> {
+                MainTab.Messages -> {
                     PlaceholderScreen(
                         title = "Create event",
                         text = "Here users will create a new spontaneous meetup."
-                    )
-                }
-
-                // Platzhalter für Benachrichtigungen und Erinnerungen
-                MainTab.Notifications -> {
-                    PlaceholderScreen(
-                        title = "Notifications",
-                        text = "Here users will see event updates and reminders."
                     )
                 }
 
