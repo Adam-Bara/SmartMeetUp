@@ -2,6 +2,8 @@ package com.example.smartmeetup.data.dummy //mock data for application, build an
 
 import com.example.smartmeetup.model.MeetupEvent   //definition of what both files look like aka templates pulling in
 import com.example.smartmeetup.model.User
+import com.example.smartmeetup.model.EventImageType
+import com.example.smartmeetup.model.EventStatus
 
 val dummyHost = User(    //creates a single user as user class
     id = 1,
@@ -29,12 +31,15 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         category = "Sport",
         previewText = "Casual football match, beginners welcome.",
         description = "A relaxed football meetup in the park. No fixed teams, no pressure, just movement and some company after class.",
+        date = "May 24, 2025",
         startTime = "14:00",
         endTime = "16:00",
         locationName = "Stadtpark Gummersbach",
         host = dummyHost,
         participants = dummyParticipants,
-        participantLimit = 15
+        participantLimit = 15,
+        status = EventStatus.Ongoing,
+        imageType = EventImageType.Park
     ),
     MeetupEvent(
         id = 124,
@@ -42,12 +47,15 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         category = "Learning",
         previewText = "Quiet study session for exam prep.",
         description = "A focused study meetup for anyone who wants to work through university tasks together without completely losing their will to live.",
+        date = "May 18, 2025",
         startTime = "10:00",
         endTime = "12:00",
         locationName = "Campus Library",
         host = User(id = 12, displayName = "Marlon", username = "@marlon"),
-        participants = dummyParticipants.take(4),   //takes the first 4 participants from the list
-        participantLimit = 8
+        participants = dummyParticipants.take(4),
+        participantLimit = 8,
+        status = EventStatus.StartingSoon,
+        imageType = EventImageType.Workshop
     ),
     MeetupEvent(
         id = 125,
@@ -55,12 +63,15 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         category = "Social",
         previewText = "Short coffee break near campus.",
         description = "A spontaneous café meetup after lecture for anyone who wants to talk, recharge, or stare meaningfully at caffeine.",
+        date = "Jun 7, 2025",
         startTime = "15:30",
         endTime = "16:30",
         locationName = "Café Central",
         host = User(id = 13, displayName = "Elena", username = "@elena"),
         participants = dummyParticipants.take(3),
-        participantLimit = 6
+        participantLimit = 6,
+        status = EventStatus.StartingTomorrow,
+        imageType = EventImageType.Picnic
     )
 )
 
