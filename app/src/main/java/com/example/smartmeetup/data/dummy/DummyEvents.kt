@@ -59,19 +59,70 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
     ),
     MeetupEvent(
         id = 125,
-        title = "Coffee After Lecture",
-        category = "Social",
-        previewText = "Short coffee break near campus.",
-        description = "A spontaneous café meetup after lecture for anyone who wants to talk, recharge, or stare meaningfully at caffeine.",
-        date = "Jun 7, 2025",
-        startTime = "15:30",
-        endTime = "16:30",
-        locationName = "Café Central",
-        host = User(id = 13, displayName = "Elena", username = "@elena"),
+        title = "Tennis Tournament",
+        category = "Sport",
+        previewText = "Tournament with students at campus plaza.",
+        description = "A tennis tournament for all first semester students.",
+        date = "July 18, 2025",
+        startTime = "11:00",
+        endTime = "12:00",
+        locationName = "Campus Tennis Courts",
+        host = User(id = 12, displayName = "Marlon", username = "@marlon"),
         participants = dummyParticipants.take(3),
+        participantLimit = 8,
+        status = EventStatus.StartingSoon,
+        imageType = EventImageType.Tennis
+    ),
+
+    MeetupEvent(
+        id = 126,
+        title = "Hiking Trip",
+        category = "Sport",
+        previewText = "Long hike across the mountains",
+        description = "A long hike across the Alps for everyone who feels touching grass",
+        date = "Jun 7, 2024",
+        startTime = "15:30",
+        endTime = "20:30",
+        locationName = "Oberberg",
+        host = User(id = 3, displayName = "Jonas", username = "@jonas"),
+        participants = dummyParticipants.take(2),
         participantLimit = 6,
-        status = EventStatus.StartingTomorrow,
-        imageType = EventImageType.Picnic
+        status = EventStatus.Archived,
+        imageType = EventImageType.Hiking
+    ),
+
+
+    MeetupEvent(
+        id = 127,
+        title = "Hiking Trip 2",
+        category = "Sport",
+        previewText = "Another hike across the mountains",
+        description = "A new group hike across the Alps for everyone who feels touching grass",
+        date = "Jun 10, 2024",
+        startTime = "15:30",
+        endTime = "20:30",
+        locationName = "Oberberg",
+        host = User(id = 3, displayName = "Jonas", username = "@jonas"),
+        participants = dummyParticipants.take(2),
+        participantLimit = 6,
+        status = EventStatus.Archived,
+        imageType = EventImageType.Hiking
+    ),
+    MeetupEvent(
+        id = 127,
+        title = "Hiking Trip 3",
+        category = "Sport",
+        previewText = "Last hike across the mountains",
+        description = "Last group hike this year!",
+        date = "Jun 15, 2024",
+        startTime = "15:30",
+        endTime = "20:30",
+        locationName = "Oberberg",
+        host = User(id = 3, displayName = "Jonas", username = "@jonas"),
+        participants = dummyParticipants.take(2),
+        participantLimit = 6,
+        status = EventStatus.Cancelled,
+        imageType = EventImageType.Hiking
     )
 )
 
