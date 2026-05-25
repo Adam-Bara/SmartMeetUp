@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 
 // Icons für die Bottom Navigation
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Bookmark
@@ -82,7 +80,7 @@ fun MainScaffold(
                     onClick = { selectedTab = MainTab.Events },
                     icon = {
                         Icon(
-                            imageVector = Icons.Default.Event,
+                            imageVector = Icons.Default.Map,
                             contentDescription = "Events"
                         )
                     },
