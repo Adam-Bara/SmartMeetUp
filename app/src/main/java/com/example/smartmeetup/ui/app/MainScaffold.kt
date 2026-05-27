@@ -4,6 +4,11 @@ package com.example.smartmeetup.ui.app
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 // Icons für die Bottom Navigation
 import androidx.compose.material.icons.Icons
@@ -35,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.smartmeetup.data.dummy.dummyEvents
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
+import com.example.smartmeetup.ui.map.MapScreen
 
 // Enum für die verschiedenen Hauptbereiche der App.
 // Jeder Tab besitzt einen Titel, der später z. B. für Labels genutzt werden kann.
@@ -73,68 +79,101 @@ fun MainScaffold(
 
         // Untere Navigation mit den Hauptbereichen der App
         bottomBar = {
-            NavigationBar {
-                // Navigationseintrag für die Event-Liste
+            NavigationBar(
+                modifier = Modifier.height(96.dp),
+                containerColor = Color.White,
+                tonalElevation = 4.dp
+            ) {
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Events,
                     onClick = { selectedTab = MainTab.Events },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Map,
-                            contentDescription = "Events"
+                            contentDescription = "Events",
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text("Events")
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF007AFF),
+                        selectedTextColor = Color(0xFF007AFF),
+                        unselectedIconColor = Color(0xFF8E8E93),
+                        unselectedTextColor = Color(0xFF8E8E93),
+                        indicatorColor = Color.Transparent
+                    )
                 )
 
-                // Navigationseintrag für die Kartenansicht
                 NavigationBarItem(
                     selected = selectedTab == MainTab.MyEvents,
                     onClick = { selectedTab = MainTab.MyEvents },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Bookmark,
-                            contentDescription = "My Events"
+                            contentDescription = "My Events",
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text("My Events")
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF007AFF),
+                        selectedTextColor = Color(0xFF007AFF),
+                        unselectedIconColor = Color(0xFF8E8E93),
+                        unselectedTextColor = Color(0xFF8E8E93),
+                        indicatorColor = Color.Transparent
+                    )
                 )
 
-                // Navigationseintrag zum Erstellen eines neuen Events
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Messages,
                     onClick = { selectedTab = MainTab.Messages },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Forum,
-                            contentDescription = "Messages"
+                            contentDescription = "Messages",
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text("Messages")
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF007AFF),
+                        selectedTextColor = Color(0xFF007AFF),
+                        unselectedIconColor = Color(0xFF8E8E93),
+                        unselectedTextColor = Color(0xFF8E8E93),
+                        indicatorColor = Color.Transparent
+                    )
                 )
 
-                // Navigationseintrag für Profil und Einstellungen
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Profile,
                     onClick = { selectedTab = MainTab.Profile },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = "Profile"
+                            contentDescription = "Profile",
+                            modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
                         Text("Profile")
-                    }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF007AFF),
+                        selectedTextColor = Color(0xFF007AFF),
+                        unselectedIconColor = Color(0xFF8E8E93),
+                        unselectedTextColor = Color(0xFF8E8E93),
+                        indicatorColor = Color.Transparent
+                    )
                 )
             }
         }
+
     ) { innerPadding ->
 
         // Box dient als Container für den eigentlichen Inhalt.
@@ -145,28 +184,24 @@ fun MainScaffold(
             // Je nach ausgewähltem Tab wird ein anderer Screen angezeigt.
             when (selectedTab) {
 
-                // Zeigt die Event-Liste mit Dummy-Daten an
                 MainTab.Events -> {
-                    EventListScreen(events = dummyEvents)
-                }
-
-                // Platzhalter für die spätere Kartenansicht
-                MainTab.MyEvents -> {
                     PlaceholderScreen(
                         title = "Map",
                         text = "Here we will show nearby meetup events on a map."
                     )
                 }
 
-                // Platzhalter für den Screen zum Erstellen eines Events
+                MainTab.MyEvents -> {
+                    EventListScreen(events = dummyEvents)
+                }
+
                 MainTab.Messages -> {
                     PlaceholderScreen(
-                        title = "Create event",
-                        text = "Here users will create a new spontaneous meetup."
+                        title = "Messages",
+                        text = "Here users will see a list of all messages."
                     )
                 }
 
-                // Platzhalter für Profil und Einstellungen
                 MainTab.Profile -> {
                     PlaceholderScreen(
                         title = "Profile",
