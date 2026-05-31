@@ -10,6 +10,9 @@ data class MeetupEvent(
     val startTime: String,
     val endTime: String,
     val locationName: String,
+    // koordinaten für Map wichtig
+    val latitude: Double,
+    val longitude: Double,
     val host: User,
     val participants: List<User>,
     val participantLimit: Int,

@@ -35,6 +35,10 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         startTime = "14:00",
         endTime = "16:00",
         locationName = "Stadtpark Gummersbach",
+
+        latitude = 51.0236,
+        longitude = 7.5632,
+
         host = dummyHost,
         participants = dummyParticipants,
         participantLimit = 15,
@@ -51,6 +55,10 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         startTime = "10:00",
         endTime = "12:00",
         locationName = "Campus Library",
+
+        latitude = 51.0236,
+        longitude = 7.5632,
+
         host = User(id = 12, displayName = "Marlon", username = "@marlon"),
         participants = dummyParticipants.take(4),
         participantLimit = 8,
@@ -67,6 +75,10 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         startTime = "11:00",
         endTime = "12:00",
         locationName = "Campus Tennis Courts",
+
+        latitude = 51.0236,
+        longitude = 7.5632,
+
         host = User(id = 12, displayName = "Marlon", username = "@marlon"),
         participants = dummyParticipants.take(3),
         participantLimit = 8,
@@ -84,6 +96,10 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         startTime = "15:30",
         endTime = "20:30",
         locationName = "Oberberg",
+
+        latitude = 51.0236,
+        longitude = 7.5632,
+
         host = User(id = 3, displayName = "Jonas", username = "@jonas"),
         participants = dummyParticipants.take(2),
         participantLimit = 6,
@@ -102,6 +118,10 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         startTime = "15:30",
         endTime = "20:30",
         locationName = "Oberberg",
+
+        latitude = 51.0236,
+        longitude = 7.5632,
+
         host = User(id = 3, displayName = "Jonas", username = "@jonas"),
         participants = dummyParticipants.take(2),
         participantLimit = 6,
@@ -118,6 +138,10 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         startTime = "15:30",
         endTime = "20:30",
         locationName = "Oberberg",
+
+        latitude = 51.0236,
+        longitude = 7.5632,
+
         host = User(id = 3, displayName = "Jonas", username = "@jonas"),
         participants = dummyParticipants.take(2),
         participantLimit = 6,
