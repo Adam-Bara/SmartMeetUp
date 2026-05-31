@@ -41,6 +41,7 @@ import com.example.smartmeetup.data.dummy.dummyEvents
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import com.example.smartmeetup.ui.map.MapScreen
+import com.example.smartmeetup.ui.create.CreateEventScreen
 
 // Enum für die verschiedenen Hauptbereiche der App.
 // Jeder Tab besitzt einen Titel, der später z. B. für Labels genutzt werden kann.
@@ -62,6 +63,7 @@ fun MainScaffold(
     // Speichert den aktuell ausgewählten Tab.
     // remember sorgt dafür, dass der Zustand bei Recomposition erhalten bleibt.
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
+    var showCreateEventScreen by remember { mutableStateOf(false) }
 
     // Scaffold stellt die Grundstruktur der App bereit:
     // TopAppBar, Bottom Navigation und Inhaltsbereich.
@@ -77,13 +79,14 @@ fun MainScaffold(
             )
         },
 
-        // Untere Navigation mit den Hauptbereichen der App
+        // Untere Navigation zu den Hauptbereichen der App
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.height(96.dp),
                 containerColor = Color.White,
                 tonalElevation = 4.dp
             ) {
+                //Events Map
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Events,
                     onClick = { selectedTab = MainTab.Events },
@@ -106,6 +109,7 @@ fun MainScaffold(
                     )
                 )
 
+                //Gespeicherte Events
                 NavigationBarItem(
                     selected = selectedTab == MainTab.MyEvents,
                     onClick = { selectedTab = MainTab.MyEvents },
@@ -128,6 +132,7 @@ fun MainScaffold(
                     )
                 )
 
+                //Messages
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Messages,
                     onClick = { selectedTab = MainTab.Messages },
@@ -150,6 +155,7 @@ fun MainScaffold(
                     )
                 )
 
+                //Profile
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Profile,
                     onClick = { selectedTab = MainTab.Profile },
@@ -185,10 +191,17 @@ fun MainScaffold(
             when (selectedTab) {
 
                 MainTab.Events -> {
-                    PlaceholderScreen(
-                        title = "Map",
-                        text = "Here we will show nearby meetup events on a map."
-                    )
+                    if (showCreateEventScreen) {
+                        CreateEventScreen(
+                            onCloseClick = { showCreateEventScreen = false },
+                            onPublishClick = { showCreateEventScreen = false }
+                        )
+                    } else {
+                        MapScreen(
+                            events = dummyEvents,
+                            onCreateEventClick = { showCreateEventScreen = true }
+                        )
+                    }
                 }
 
                 MainTab.MyEvents -> {
