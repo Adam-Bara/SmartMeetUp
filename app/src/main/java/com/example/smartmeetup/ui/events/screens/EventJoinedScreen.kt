@@ -87,7 +87,7 @@ fun EventJoinedScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 30.dp)
-                .padding(top = 44.dp, bottom = 22.dp),
+                .padding(top = 25.dp, bottom = 22.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             EventJoinedTopBar(
@@ -95,28 +95,28 @@ fun EventJoinedScreen(
                 onLeaveEventClick = onLeaveEventClick
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             EventJoinedTitle(
                 event = event,
                 state = state
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             EventJoinedTimer(
                 state = state
             )
 
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             EventJoinedInfoCard(event = event)
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             EventJoinedChatRow(onClick = onChatClick)
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             EventJoinedParticipantsRow(
                 event = event,
@@ -138,13 +138,13 @@ private fun EventJoinedTopBar(
     ) {
         Surface(
             modifier = Modifier
-                .size(52.dp)
+                .size(46.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onClick = onBackClick
                 ),
-            shape = RoundedCornerShape(18.dp),
+            shape = RoundedCornerShape(15.dp),
             color = Color.White,
             shadowElevation = 2.dp
         ) {
@@ -153,7 +153,7 @@ private fun EventJoinedTopBar(
                     imageVector = Icons.Default.ArrowBackIosNew,
                     contentDescription = "Back",
                     tint = Color(0xFF111827),
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -161,9 +161,9 @@ private fun EventJoinedTopBar(
         Button(
             onClick = onLeaveEventClick,
             modifier = Modifier
-                .height(46.dp)
-                .width(142.dp),
-            shape = RoundedCornerShape(16.dp),
+                .height(42.dp)
+                .width(132.dp),
+            shape = RoundedCornerShape(15.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFFF4B4B),
                 contentColor = Color.White
@@ -235,14 +235,14 @@ private fun EventJoinedTimer(
     state: EventJoinedUiState
 ) {
     Box(
-        modifier = Modifier.size(168.dp),
+        modifier = Modifier.size(148.dp),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(size.width / 2, size.height / 2)
             val outerRadius = size.minDimension * 0.40f
             val middleRadius = size.minDimension * 0.40f
-            val ringSize = size.minDimension * 0.075f
+            val ringSize = size.minDimension * 0.040f
 
             drawCircle(
                 color = state.accentColor.copy(alpha = 0.08f),
@@ -288,21 +288,21 @@ private fun EventJoinedTimer(
                 imageVector = Icons.Outlined.Timer,
                 contentDescription = null,
                 tint = Color(0xFF6B7280),
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(18.dp)
             )
 
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "24:37",
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF020617)
             )
 
             Text(
                 text = state.timerLabel,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF6B7280)
             )
         }
@@ -322,7 +322,7 @@ private fun EventJoinedInfoCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 22.dp, vertical = 16.dp)
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         ) {
             EventJoinedTextSection(
                 title = "ABOUT",
@@ -358,7 +358,7 @@ private fun EventJoinedTextSection(
     body: String
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         EventJoinedSectionTitle(title = title)
 
@@ -377,7 +377,7 @@ private fun EventJoinedIconSection(
     body: String
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         EventJoinedSectionTitle(title = title)
 
@@ -388,10 +388,10 @@ private fun EventJoinedIconSection(
                 imageVector = icon,
                 contentDescription = null,
                 tint = Color(0xFF6B7280),
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(22.dp)
             )
 
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             Text(
                 text = body,
@@ -408,7 +408,7 @@ private fun EventJoinedHostSection(
     event: MeetupEvent
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         EventJoinedSectionTitle(title = "HOSTED BY")
 
@@ -419,16 +419,16 @@ private fun EventJoinedHostSection(
                 painter = painterResource(id = R.drawable.profile_image_mountain),
                 contentDescription = event.host.displayName,
                 modifier = Modifier
-                    .size(42.dp)
+                    .size(30.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(15.dp))
 
             Text(
                 text = event.host.displayName,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF111827)
             )
@@ -449,7 +449,7 @@ private fun EventJoinedSectionTitle(title: String) {
 @Composable
 private fun EventJoinedDivider() {
     HorizontalDivider(
-        modifier = Modifier.padding(vertical = 12.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         thickness = 1.dp,
         color = Color(0xFFE5E7EB)
     )
@@ -462,19 +462,19 @@ private fun EventJoinedChatRow(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(74.dp)
+            .height(66.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(24.dp),
         color = Color.White.copy(alpha = 0.95f),
         shadowElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 18.dp),
+            modifier = Modifier.padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(40.dp)
                     .background(Color(0xFFDCEEFF), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
@@ -482,11 +482,11 @@ private fun EventJoinedChatRow(
                     imageVector = Icons.Default.ChatBubble,
                     contentDescription = "Live Chat",
                     tint = Color(0xFF0368F6),
-                    modifier = Modifier.size(26.dp)
+                    modifier = Modifier.size(22.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -499,9 +499,10 @@ private fun EventJoinedChatRow(
                 )
 
                 Text(
-                    text = "Send messages to all participants",
+                    text = "Message all participants",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF6B7280)
+                    color = Color(0xFF6B7280),
+                    maxLines = 1
                 )
             }
 
@@ -511,14 +512,14 @@ private fun EventJoinedChatRow(
             ) {
                 Text(
                     text = "3 new",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF0368F6)
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
@@ -540,7 +541,7 @@ private fun EventJoinedParticipantsRow(
             .fillMaxWidth()
             .height(64.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(24.dp),
         color = Color(0xFFEAF7EA).copy(alpha = 0.95f),
         shadowElevation = 1.dp
     ) {
@@ -552,16 +553,17 @@ private fun EventJoinedParticipantsRow(
                 imageVector = Icons.Default.Groups,
                 contentDescription = "Participants",
                 tint = Color(0xFF5BB854),
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(22.dp)
             )
 
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "Teilnehmer ${event.participantStatus}",
-                style = MaterialTheme.typography.titleMedium,
+                text = "Participants ${event.participantStatus}",
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF5BB854),
+                maxLines = 1,
                 modifier = Modifier.weight(1f)
             )
 
@@ -573,7 +575,7 @@ private fun EventJoinedParticipantsRow(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Surface(
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(30.dp),
                     shape = CircleShape,
                     color = Color(0xFFDDF2DD)
                 ) {
@@ -609,7 +611,7 @@ private fun EventJoinedAvatarStack() {
                 contentDescription = null,
                 modifier = Modifier
                     .offset(x = (index * 22).dp)
-                    .size(40.dp)
+                    .size(35.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
@@ -632,7 +634,7 @@ private fun eventJoinedUiState(status: EventJoinedStatus): EventJoinedUiState {
             statusText = "Not started yet",
             timerLabel = "Starts in",
             accentColor = Color(0xFF0368F6),
-            statusDotColor = Color(0xFF0368F6)
+            statusDotColor = Color(0xFFFF315B)
         )
 
         EventJoinedStatus.ONGOING -> EventJoinedUiState(
