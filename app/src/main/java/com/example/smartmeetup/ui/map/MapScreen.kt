@@ -68,7 +68,7 @@ fun MapScreen(
         hasLocationPermission = granted
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) { //TODO: nicht in das UI packen
         Configuration.getInstance().load(
             context,
             PreferenceManager.getDefaultSharedPreferences(context)
