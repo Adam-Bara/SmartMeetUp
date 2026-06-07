@@ -1,5 +1,9 @@
 package com.example.smartmeetup.ui.app
 
+//connects data
+import androidx.compose.runtime.collectAsState
+import com.example.smartmeetup.ui.events.EventViewModel
+
 // Layout-Imports für Container, Vollbildgröße und Padding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,6 +69,8 @@ fun MainScaffold(
     // remember sorgt dafür, dass der Zustand bei Recomposition erhalten bleibt.
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
     var showCreateEventScreen by remember { mutableStateOf(false) }
+    val eventViewModel = remember { EventViewModel() } //We keep the event data here so MapScreen and EventListScreen use the same events as shared event data
+    val eventUiState by eventViewModel.uiState.collectAsState() //Later, other screens can use this too instead of loading dummy data separately
 
     // Scaffold stellt die Grundstruktur der App bereit:
     // TopAppBar, Bottom Navigation und Inhaltsbereich.
@@ -117,12 +123,12 @@ fun MainScaffold(
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Bookmark,
-                            contentDescription = "My Events",
+                            contentDescription = MainTab.MyEvents.title,
                             modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
-                        Text("My Events")
+                        Text(MainTab.MyEvents.title)
                     },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF007AFF),
@@ -199,14 +205,19 @@ fun MainScaffold(
                         )
                     } else {
                         MapScreen(
-                            events = dummyEvents,
+                            events = eventUiState.events,
                             onCreateEventClick = { showCreateEventScreen = true }
                         )
                     }
                 }
 
                 MainTab.MyEvents -> {
-                    EventListScreen(events = dummyEvents)
+                    EventListScreen(
+                        events = eventUiState.events,
+                        onEventClick = { event ->
+                            eventViewModel.selectEvent(event.id)
+                        }
+                    )
                 }
 
                 MainTab.Messages -> {
