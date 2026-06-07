@@ -332,7 +332,7 @@ private fun JoinEventButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(54.dp),
+            .height(52.dp),
         shape = RoundedCornerShape(18.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF0368F6),
