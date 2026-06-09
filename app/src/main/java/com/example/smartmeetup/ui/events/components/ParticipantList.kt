@@ -39,16 +39,17 @@ import com.example.smartmeetup.model.User
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.layout.height
 
-@Composable
+
+@Composable //all main composables allow the parent/scaffold to control outside layout
 fun ParticipantList(
     participants: List<User>,
     participantStatus: String,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(Color(0xFFF8FAFB))
             .padding(horizontal = 24.dp, vertical = 24.dp)
