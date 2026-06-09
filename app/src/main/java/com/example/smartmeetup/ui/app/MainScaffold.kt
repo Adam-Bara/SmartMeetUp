@@ -69,7 +69,8 @@ fun MainScaffold(
     // remember sorgt dafür, dass der Zustand bei Recomposition erhalten bleibt.
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
     var showCreateEventScreen by remember { mutableStateOf(false) }
-    val eventViewModel = remember { EventViewModel() } //We keep the event data here so MapScreen and EventListScreen use the same events as shared event data
+    val eventViewModel =
+        remember { EventViewModel() } //We keep the event data here so MapScreen and EventListScreen use the same events as shared event data
     val eventUiState by eventViewModel.uiState.collectAsState() //Later, other screens can use this too instead of loading dummy data separately
 
     // Scaffold stellt die Grundstruktur der App bereit:
@@ -200,8 +201,14 @@ fun MainScaffold(
                 MainTab.Events -> {
                     if (showCreateEventScreen) {
                         CreateEventScreen(
-                            onCloseClick = { showCreateEventScreen = false },
-                            onPublishClick = { showCreateEventScreen = false }
+                            onCloseClick = {
+                                showCreateEventScreen = false
+                            },
+                            onPublishClick = {
+                                eventViewModel.createMockEventFromForm()
+                                showCreateEventScreen = false
+                                selectedTab = MainTab.MyEvents
+                            }
                         )
                     } else {
                         MapScreen(
