@@ -43,21 +43,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.smartmeetup.R
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
+import com.example.smartmeetup.model.ChatMessage
+import com.example.smartmeetup.model.User
 
-/**
- * Displays a chat conversation UI.
- *
- * This composable only renders the chat screen.
- * Navigation is kept outside and exposed through callbacks such as onBackClick.
- * Later this screen can be opened from EventJoinedScreen or AllMessagesScreen.
- *
- * The modifier parameter follows Compose convention and lets a parent composable
- * control external layout concerns such as padding, size, or background.
- */
+//ChatScreen receives ChatMessage data from outside, and preview data is explicit
 @Composable
 fun ChatScreen(
-    chatTitle: String = "Brooke Davis",
-    messages: List<ChatUiMessage> = sampleChatMessages,
+    chatTitle: String,
+    messages: List<ChatMessage>,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
 ) {
@@ -163,32 +156,20 @@ private fun ChatHeader(
 }
 
 @Composable
-private fun ChatMessageBubble(
-    message: ChatUiMessage,
+private fun ChatMessageBubble( //bubble styling is split into tiny helpers
+    message: ChatMessage,
     modifier: Modifier = Modifier
 ) {
+    val bubbleColors = chatBubbleColors(isOwnMessage = message.isOwnMessage)
+
     Row(
         modifier = modifier,
-        horizontalArrangement = if (message.isOwnMessage) Arrangement.End else Arrangement.Start
+        horizontalArrangement = chatBubbleAlignment(isOwnMessage = message.isOwnMessage)
     ) {
         Surface(
             modifier = Modifier.widthIn(max = 285.dp),
-            shape = if (message.isOwnMessage) {
-                RoundedCornerShape(
-                    topStart = 22.dp,
-                    topEnd = 22.dp,
-                    bottomStart = 22.dp,
-                    bottomEnd = 4.dp
-                )
-            } else {
-                RoundedCornerShape(
-                    topStart = 22.dp,
-                    topEnd = 22.dp,
-                    bottomStart = 4.dp,
-                    bottomEnd = 22.dp
-                )
-            },
-            color = if (message.isOwnMessage) Color(0xFF2EAF3D) else Color(0xFFE8F4FF),
+            shape = chatBubbleShape(isOwnMessage = message.isOwnMessage),
+            color = bubbleColors.backgroundColor,
             tonalElevation = 0.dp,
             shadowElevation = 0.dp
         ) {
@@ -199,49 +180,99 @@ private fun ChatMessageBubble(
                 )
             ) {
                 Text(
-                    text = message.senderName,
+                    text = message.sender.displayName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = if (message.isOwnMessage) Color.White else Color(0xFF1285F5)
+                    color = bubbleColors.senderColor
                 )
 
                 Text(
                     text = message.text,
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (message.isOwnMessage) Color.White else Color(0xFF111827),
+                    color = bubbleColors.messageColor,
                     modifier = Modifier.padding(top = 8.dp)
                 )
 
-                Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = message.time,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (message.isOwnMessage) {
-                            Color.White.copy(alpha = 0.85f)
-                        } else {
-                            Color(0xFF6B7280)
-                        }
-                    )
-
-                    Text(
-                        text = "  ✓✓",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (message.isOwnMessage) {
-                            Color.White.copy(alpha = 0.9f)
-                        } else {
-                            Color(0xFF6B7280)
-                        }
-                    )
-                }
+                ChatMessageMetaRow(
+                    time = message.time,
+                    color = bubbleColors.metaColor
+                )
             }
         }
     }
 }
 
+private data class ChatBubbleColors(
+    val backgroundColor: Color,
+    val senderColor: Color,
+    val messageColor: Color,
+    val metaColor: Color
+)
+
+private fun chatBubbleColors(isOwnMessage: Boolean): ChatBubbleColors {
+    return if (isOwnMessage) {
+        ChatBubbleColors(
+            backgroundColor = Color(0xFF2EAF3D),
+            senderColor = Color.White,
+            messageColor = Color.White,
+            metaColor = Color.White.copy(alpha = 0.88f)
+        )
+    } else {
+        ChatBubbleColors(
+            backgroundColor = Color(0xFFE8F4FF),
+            senderColor = Color(0xFF1285F5),
+            messageColor = Color(0xFF111827),
+            metaColor = Color(0xFF6B7280)
+        )
+    }
+}
+
+private fun chatBubbleAlignment(isOwnMessage: Boolean): Arrangement.Horizontal {
+    return if (isOwnMessage) Arrangement.End else Arrangement.Start
+}
+
+private fun chatBubbleShape(isOwnMessage: Boolean): RoundedCornerShape {
+    return if (isOwnMessage) {
+        RoundedCornerShape(
+            topStart = 22.dp,
+            topEnd = 22.dp,
+            bottomStart = 22.dp,
+            bottomEnd = 4.dp
+        )
+    } else {
+        RoundedCornerShape(
+            topStart = 22.dp,
+            topEnd = 22.dp,
+            bottomStart = 4.dp,
+            bottomEnd = 22.dp
+        )
+    }
+}
+
+@Composable
+private fun ChatMessageMetaRow(
+    time: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = time,
+            style = MaterialTheme.typography.bodyMedium,
+            color = color
+        )
+
+        Text(
+            text = "  ✓✓",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = color
+        )
+    }
+}
 @Composable
 private fun ChatInputBar(
     modifier: Modifier = Modifier
@@ -287,52 +318,45 @@ private fun ChatInputBar(
         }
     }
 }
-
-data class ChatUiMessage(
-    val senderName: String,
-    val text: String,
-    val time: String,
-    val isOwnMessage: Boolean
+private val previewBrookeUser = User(
+    id = 20,
+    displayName = "Brooke",
+    username = "@brooke"
 )
 
-private val sampleChatMessages = listOf(
-    ChatUiMessage(
-        senderName = "Brooke",
+private val previewCurrentUser = User(
+    id = 99,
+    displayName = "Lucas",
+    username = "@lucas"
+)
+
+private val previewChatMessages = listOf(
+    ChatMessage(
+        id = 1,
+        eventId = 123,
+        sender = previewBrookeUser,
         text = "Hey Lucas!",
         time = "10:30 AM",
         isOwnMessage = false
     ),
-    ChatUiMessage(
-        senderName = "Brooke",
-        text = "How's your project going?",
-        time = "10:30 AM",
-        isOwnMessage = false
-    ),
-    ChatUiMessage(
-        senderName = "Lucas",
+    ChatMessage(
+        id = 2,
+        eventId = 123,
+        sender = previewCurrentUser,
         text = "Hi Brooke!",
         time = "10:31 AM",
         isOwnMessage = true
     ),
-    ChatUiMessage(
-        senderName = "Lucas",
-        text = "It's going well. Thanks for asking!",
-        time = "10:31 AM",
-        isOwnMessage = true
-    ),
-    ChatUiMessage(
-        senderName = "Brooke",
+    ChatMessage(
+        id = 3,
+        eventId = 123,
+        sender = previewBrookeUser,
         text = "No worries. Let me know if you need any help 🙂",
         time = "10:32 AM",
         isOwnMessage = false
-    ),
-    ChatUiMessage(
-        senderName = "Lucas",
-        text = "You're the best!",
-        time = "10:32 AM",
-        isOwnMessage = true
     )
 )
+
 
 @Preview(
     showBackground = true,
@@ -342,6 +366,9 @@ private val sampleChatMessages = listOf(
 @Composable
 fun ChatScreenPreview() {
     SmartMeetUpTheme {
-        ChatScreen()
+        ChatScreen(
+            chatTitle = "Brooke Davis",
+            messages = previewChatMessages
+        )
     }
 }

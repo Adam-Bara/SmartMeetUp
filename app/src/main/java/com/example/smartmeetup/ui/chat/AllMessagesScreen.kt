@@ -1,11 +1,12 @@
 package com.example.smartmeetup.ui.chat
 
+import com.example.smartmeetup.model.Conversation
+import com.example.smartmeetup.ui.events.assets.eventImageRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.smartmeetup.R
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
+import com.example.smartmeetup.model.EventImageType
+import com.example.smartmeetup.ui.events.assets.eventImageRes
 
 /**
  * Displays the message overview screen.
@@ -53,9 +56,9 @@ import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
  */
 @Composable
 fun AllMessagesScreen(
-    conversations: List<MessageOverviewItem> = sampleMessageOverviewItems,
+    conversations: List<Conversation>,
     modifier: Modifier = Modifier,
-    onMessageClick: (MessageOverviewItem) -> Unit = {}
+    onMessageClick: (Conversation) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -160,7 +163,7 @@ private fun SearchBar(
 
 @Composable
 private fun MessageOverviewCard(
-    item: MessageOverviewItem,
+    item: Conversation,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -189,7 +192,7 @@ private fun MessageOverviewCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = item.imageRes),
+                painter = painterResource(id = eventImageRes(item.imageType)),
                 contentDescription = item.title,
                 modifier = Modifier
                     .size(78.dp)
@@ -258,61 +261,26 @@ private fun MessageOverviewCard(
     }
 }
 
-
-
-data class MessageOverviewItem(
-    val title: String,
-    val senderName: String,
-    val previewText: String,
-    val date: String,
-    val imageRes: Int
-)
-
-private val sampleMessageOverviewItems = listOf(
-    MessageOverviewItem(
+private val previewConversations = listOf(
+    Conversation(
+        id = 1,
+        eventId = 123,
         title = "Project Kickoff Meetup",
         senderName = "Brooke Davis",
         previewText = "Sounds good! See you there.",
         date = "May 20, 2025",
-        imageRes = R.drawable.event_image_park
+        imageType = EventImageType.Park
     ),
-    MessageOverviewItem(
+    Conversation(
+        id = 2,
+        eventId = 125,
         title = "Tennis Tournament",
         senderName = "Lucas Smith",
-        previewText = "Great match yesterday! 🎾",
+        previewText = "Great match yesterday!",
         date = "May 18, 2025",
-        imageRes = R.drawable.event_image_tennis
-    ),
-    MessageOverviewItem(
-        title = "Community Picnic",
-        senderName = "Alex Johnson",
-        previewText = "Don't forget to bring something to share!",
-        date = "May 12, 2025",
-        imageRes = R.drawable.event_image_picnic
-    ),
-    MessageOverviewItem(
-        title = "Design Workshop",
-        senderName = "Sarah Lee",
-        previewText = "Here's the resource I mentioned.",
-        date = "May 5, 2025",
-        imageRes = R.drawable.event_image_workshop
-    ),
-    MessageOverviewItem(
-        title = "Hiking Trip",
-        senderName = "Mike Brown",
-        previewText = "The trail was amazing!",
-        date = "Apr 28, 2025",
-        imageRes = R.drawable.event_image_hiking
-    ),
-    MessageOverviewItem(
-        title = "Birthday Celebration",
-        senderName = "Emma Wilson",
-        previewText = "Can't wait to celebrate! 🎉",
-        date = "Apr 20, 2025",
-        imageRes = R.drawable.event_image_birthday
+        imageType = EventImageType.Tennis
     )
 )
-
 @Preview(
     showBackground = true,
     widthDp = 390,
@@ -321,7 +289,10 @@ private val sampleMessageOverviewItems = listOf(
 @Composable
 fun AllMessagesScreenPreview() {
     SmartMeetUpTheme {
-        AllMessagesScreen()
+        AllMessagesScreen(
+            conversations = previewConversations,
+            onMessageClick = {}
+        )
     }
 }
 
