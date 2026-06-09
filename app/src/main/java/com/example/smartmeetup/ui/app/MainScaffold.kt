@@ -123,12 +123,12 @@ fun MainScaffold(
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Bookmark,
-                            contentDescription = MainTab.MyEvents.title,
+                            contentDescription = MainTab.MyEvents.title, //changed naming to avoid duplicates with SonarQube literals
                             modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
-                        Text(MainTab.MyEvents.title)
+                        Text(MainTab.MyEvents.title) //changed naming to avoid duplicates with SonarQube literals
                     },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF007AFF),
