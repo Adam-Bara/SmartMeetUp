@@ -1,5 +1,5 @@
 package com.example.smartmeetup.ui.chat
-
+//this file owns chat UI state and actions for Chat
 import androidx.lifecycle.ViewModel
 import com.example.smartmeetup.data.repository.ChatRepository
 import com.example.smartmeetup.model.ChatMessage

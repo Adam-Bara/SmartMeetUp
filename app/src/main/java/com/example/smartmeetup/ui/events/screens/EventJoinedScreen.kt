@@ -55,7 +55,7 @@ import com.example.smartmeetup.data.dummy.selectedDummyEvent
 import com.example.smartmeetup.model.MeetupEvent
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import androidx.compose.foundation.background
-
+//this file renders the given event and status, and it does not navigate by itself.
 enum class EventJoinedStatus {
     NOT_STARTED,
     ONGOING
@@ -63,8 +63,8 @@ enum class EventJoinedStatus {
 
 @Composable
 fun EventJoinedScreen(
-    event: MeetupEvent = selectedDummyEvent,
-    status: EventJoinedStatus = EventJoinedStatus.NOT_STARTED,
+    event: MeetupEvent,
+    status: EventJoinedStatus,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onLeaveEventClick: () -> Unit = {},
@@ -126,7 +126,7 @@ fun EventJoinedScreen(
     }
 }
 
-@Composable
+@Composable //those callbacks are wired inside the UI
 private fun EventJoinedTopBar(
     onBackClick: () -> Unit,
     onLeaveEventClick: () -> Unit
@@ -656,6 +656,7 @@ private fun eventJoinedUiState(status: EventJoinedStatus): EventJoinedUiState {
 private fun EventJoinedScreenNotStartedPreview() {
     SmartMeetUpTheme {
         EventJoinedScreen(
+            event = selectedDummyEvent,
             status = EventJoinedStatus.NOT_STARTED
         )
     }
@@ -674,9 +675,10 @@ private fun eventJoinedBackgroundRes(status: EventJoinedStatus): Int {
     heightDp = 844
 )
 @Composable
-private fun EventJoinedScreenOngoingPreview() {
+private fun EventJoinedScreenOngoingPreview() {//the real screen no longer grabs dummy data by itself and Only previews use selectedDummyEvent, explicitly.
     SmartMeetUpTheme {
         EventJoinedScreen(
+            event = selectedDummyEvent,
             status = EventJoinedStatus.ONGOING
         )
     }

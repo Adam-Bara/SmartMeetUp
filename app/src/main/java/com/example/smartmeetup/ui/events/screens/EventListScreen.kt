@@ -57,7 +57,8 @@ import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import com.example.smartmeetup.R
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
-
+//runtime gets real callbacks, preview gets empty callback
+//screen receives event data, renders it, and reports event clicks upward.
 private enum class EventListFilter {
     All,
     Upcoming,
@@ -565,6 +566,9 @@ private fun avatarColor(index: Int, muted: Boolean): Color {
 @Composable
 fun EventListScreenPreview() {
     SmartMeetUpTheme {
-        EventListScreen(events = dummyEvents)
+        EventListScreen(
+            events = dummyEvents,
+            onEventClick = {}
+        )
     }
 }
