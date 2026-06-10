@@ -18,6 +18,10 @@ import com.example.smartmeetup.ui.app.SmartMeetupApp
 // App-Theme von SmartMeetUp
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 
+// Map Stuff
+import androidx.activity.enableEdgeToEdge
+import com.example.smartmeetup.map.OsmDroidConfig
+
 // MainActivity ist der Einstiegspunkt der Android-App.
 // Sie wird beim Start der App geöffnet.
 class MainActivity : ComponentActivity() {
@@ -26,14 +30,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Aktiviert die moderne Vollbild-/Edge-to-Edge-Darstellung.
-        // Inhalte können dadurch bis hinter Statusbar und Navigationbar gezeichnet werden.
         enableEdgeToEdge()
 
-        // Setzt die Benutzeroberfläche der Activity mit Jetpack Compose.
         setContent {
-            // Wendet das zentrale App-Theme an.
-            // Dadurch werden Farben, Typografie und Material-Design einheitlich genutzt.
             SmartMeetUpTheme {
                 // Startet die eigentliche App-Oberfläche.
                 SmartMeetupApp()

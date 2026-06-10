@@ -2,7 +2,6 @@ package com.example.smartmeetup.ui.map
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.preference.PreferenceManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -16,82 +15,45 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.example.smartmeetup.model.MeetupEvent
-import com.google.android.gms.location.LocationServices
-import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @Composable
 fun MapScreen(
-    events: List<MeetupEvent>,
+    uiState: MapUiState,
     onCreateEventClick: () -> Unit,
+    onLocationPermissionResult: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val radiusInMeters = 3000.0
-
-    var userLocation by remember {
-        mutableStateOf<GeoPoint?>(null)
-    }
-
-    var hasLocationPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
+    val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
-        hasLocationPermission = granted
+        onLocationPermissionResult(granted)
     }
 
-    LaunchedEffect(Unit) { //TODO: nicht in das UI packen
-        Configuration.getInstance().load(
+    LaunchedEffect(Unit) {
+        val hasPermission = ContextCompat.checkSelfPermission(
             context,
-            PreferenceManager.getDefaultSharedPreferences(context)
-        )
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
-        if (!hasLocationPermission) {
+        if (hasPermission) {
+            onLocationPermissionResult(true)
+        } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }
-
-    LaunchedEffect(hasLocationPermission) {
-        if (hasLocationPermission) {
-            val fusedLocationClient =
-                LocationServices.getFusedLocationProviderClient(context)
-
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    userLocation = GeoPoint(
-                        location.latitude,
-                        location.longitude
-                    )
-                }
-            }
         }
     }
 
@@ -107,7 +69,6 @@ fun MapScreen(
 
                     controller.setZoom(15.0)
 
-                    // Fallback-Startpunkt, falls Standort noch nicht geladen ist
                     controller.setCenter(
                         GeoPoint(52.5200, 13.4050)
                     )
@@ -116,15 +77,21 @@ fun MapScreen(
             update = { mapView ->
                 mapView.overlays.clear()
 
-                val currentLocation = userLocation
+                val userLatitude = uiState.userLatitude
+                val userLongitude = uiState.userLongitude
 
-                if (currentLocation != null) {
-                    mapView.controller.setCenter(currentLocation)
+                if (userLatitude != null && userLongitude != null) {
+                    val userLocation = GeoPoint(
+                        userLatitude,
+                        userLongitude
+                    )
+
+                    mapView.controller.setCenter(userLocation)
 
                     val radiusCircle = Polygon().apply {
                         points = Polygon.pointsAsCircle(
-                            currentLocation,
-                            radiusInMeters
+                            userLocation,
+                            uiState.radiusInMeters
                         )
                         fillColor = android.graphics.Color.argb(
                             45,
@@ -143,7 +110,7 @@ fun MapScreen(
                     mapView.overlays.add(radiusCircle)
 
                     val userMarker = Marker(mapView).apply {
-                        position = currentLocation
+                        position = userLocation
                         title = "Dein Standort"
                         setAnchor(
                             Marker.ANCHOR_CENTER,
@@ -153,34 +120,22 @@ fun MapScreen(
 
                     mapView.overlays.add(userMarker)
 
-                    events
-                        .filter { event ->
-                            val eventPoint = GeoPoint(
+                    uiState.nearbyEvents.forEach { event ->
+                        val eventMarker = Marker(mapView).apply {
+                            position = GeoPoint(
                                 event.latitude,
                                 event.longitude
                             )
-
-                            distanceBetween(
-                                currentLocation,
-                                eventPoint
-                            ) <= radiusInMeters
+                            title = event.title
+                            snippet = event.category
+                            setAnchor(
+                                Marker.ANCHOR_CENTER,
+                                Marker.ANCHOR_BOTTOM
+                            )
                         }
-                        .forEach { event ->
-                            val eventMarker = Marker(mapView).apply {
-                                position = GeoPoint(
-                                    event.latitude,
-                                    event.longitude
-                                )
-                                title = event.title
-                                snippet = event.category
-                                setAnchor(
-                                    Marker.ANCHOR_CENTER,
-                                    Marker.ANCHOR_BOTTOM
-                                )
-                            }
 
-                            mapView.overlays.add(eventMarker)
-                        }
+                        mapView.overlays.add(eventMarker)
+                    }
                 }
 
                 mapView.invalidate()
@@ -222,28 +177,3 @@ private fun CreateEventButton(
         }
     }
 }
-
-private fun distanceBetween(
-    start: GeoPoint,
-    end: GeoPoint
-): Double {
-    val earthRadius = 6371000.0
-
-    val startLat = Math.toRadians(start.latitude)
-    val endLat = Math.toRadians(end.latitude)
-    val deltaLat = Math.toRadians(end.latitude - start.latitude)
-    val deltaLon = Math.toRadians(end.longitude - start.longitude)
-
-    val a = sin(deltaLat / 2) * sin(deltaLat / 2) +
-            cos(startLat) * cos(endLat) *
-            sin(deltaLon / 2) * sin(deltaLon / 2)
-
-    val c = 2 * atan2(
-        sqrt(a),
-        sqrt(1 - a)
-    )
-
-    return earthRadius * c
-}
-
-// Preview erstmal entfernt, könnte probleme machen
