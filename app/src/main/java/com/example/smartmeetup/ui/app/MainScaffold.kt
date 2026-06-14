@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartmeetup.data.dummy.dummyEvents
+import com.example.smartmeetup.ui.chat.AllMessagesScreen
 import com.example.smartmeetup.ui.create.CreateEventScreen
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.map.MapScreen
@@ -208,10 +209,7 @@ fun MainScaffold(
                 }
 
                 MainTab.Messages -> {
-                    PlaceholderScreen(
-                        title = "Messages",
-                        text = "Here users will see a list of all messages."
-                    )
+                    AllMessagesScreen()
                 }
 
                 MainTab.Profile -> {
