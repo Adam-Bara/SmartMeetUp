@@ -35,7 +35,6 @@ import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.map.MapScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import com.example.smartmeetup.viewmodel.MapViewModel
-import com.example.smartmeetup.ui.chat.AllMessagesScreen
 
 // Enum für die verschiedenen Hauptbereiche der App.
 // Jeder Tab besitzt einen Titel, der später z. B. für Labels genutzt werden kann.
@@ -197,7 +196,8 @@ fun MainScaffold(
                         MapScreen(
                             uiState = mapUiState,
                             onCreateEventClick = { showCreateEventScreen = true },
-                            onLocationPermissionResult = mapViewModel::onLocationPermissionResult
+                            onLocationPermissionResult = mapViewModel::onLocationPermissionResult,
+                            onRefreshLocationClick = mapViewModel::refreshUserLocation
                         )
                     }
                 }

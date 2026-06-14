@@ -64,6 +64,21 @@ class MapViewModel(
         }
     }
 
+    fun refreshUserLocation() {
+        if (!locationRepository.hasLocationPermission()) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    hasLocationPermission = false,
+                    isLoadingLocation = false,
+                    locationErrorMessage = "Standortberechtigung wurde nicht erlaubt."
+                )
+            }
+            return
+        }
+
+        loadUserLocation()
+    }
+
     private fun loadUserLocation() {
         _uiState.update { currentState ->
             currentState.copy(
@@ -72,7 +87,7 @@ class MapViewModel(
             )
         }
 
-        locationRepository.getLastKnownLocation(
+        locationRepository.getCurrentLocation(
             onSuccess = { location ->
                 if (location == null) {
                     _uiState.update { currentState ->
@@ -81,7 +96,7 @@ class MapViewModel(
                             locationErrorMessage = "Standort konnte nicht geladen werden."
                         )
                     }
-                    return@getLastKnownLocation
+                    return@getCurrentLocation
                 }
 
                 _uiState.update { currentState ->

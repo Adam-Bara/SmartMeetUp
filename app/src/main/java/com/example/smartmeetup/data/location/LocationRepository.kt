@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 
 class LocationRepository(
     context: Context
@@ -31,7 +33,7 @@ class LocationRepository(
     }
 
     @SuppressLint("MissingPermission")
-    fun getLastKnownLocation(
+    fun getCurrentLocation(
         onSuccess: (Location?) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -40,12 +42,42 @@ class LocationRepository(
             return
         }
 
+        val cancellationTokenSource = CancellationTokenSource()
+
+        fusedLocationClient
+            .getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                cancellationTokenSource.token
+            )
+            .addOnSuccessListener { currentLocation ->
+                if (currentLocation != null) {
+                    onSuccess(currentLocation)
+                } else {
+                    loadLastKnownLocation(
+                        onSuccess = onSuccess,
+                        onError = onError
+                    )
+                }
+            }
+            .addOnFailureListener { exception ->
+                loadLastKnownLocation(
+                    onSuccess = onSuccess,
+                    onError = { onError(exception) }
+                )
+            }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun loadLastKnownLocation(
+        onSuccess: (Location?) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 onSuccess(location)
             }
             .addOnFailureListener { exception ->
                 onError(exception)
-            }
+        }
     }
 }

@@ -5,13 +5,16 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +37,7 @@ fun MapScreen(
     uiState: MapUiState,
     onCreateEventClick: () -> Unit,
     onLocationPermissionResult: (Boolean) -> Unit,
+    onRefreshLocationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -142,6 +146,16 @@ fun MapScreen(
             }
         )
 
+        MapStatusCard(
+            isLoadingLocation = uiState.isLoadingLocation,
+            locationErrorMessage = uiState.locationErrorMessage,
+            hasUserLocation = uiState.userLatitude != null && uiState.userLongitude != null,
+            onRefreshLocationClick = onRefreshLocationClick,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+        )
+
         CreateEventButton(
             onClick = onCreateEventClick,
             modifier = Modifier
@@ -174,6 +188,53 @@ private fun CreateEventButton(
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
+        }
+    }
+}
+
+@Composable
+private fun MapStatusCard(
+    isLoadingLocation: Boolean,
+    locationErrorMessage: String?,
+    hasUserLocation: Boolean,
+    onRefreshLocationClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val statusText = when {
+        isLoadingLocation -> "Standort wird geladen …"
+        locationErrorMessage != null -> locationErrorMessage
+        hasUserLocation -> "Dein Standort ist aktiv"
+        else -> "Standort noch nicht verfügbar"
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(18.dp),
+        color = Color.White,
+        tonalElevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 10.dp
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = statusText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black
+            )
+
+            Button(
+                onClick = onRefreshLocationClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF0368F6),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Standort aktualisieren")
+            }
         }
     }
 }
