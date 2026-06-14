@@ -33,6 +33,7 @@ import com.example.smartmeetup.data.dummy.dummyEvents
 import com.example.smartmeetup.ui.create.CreateEventScreen
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.map.MapScreen
+import com.example.smartmeetup.ui.profile.ProfileScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import com.example.smartmeetup.viewmodel.MapViewModel
 
@@ -214,10 +215,7 @@ fun MainScaffold(
                 }
 
                 MainTab.Profile -> {
-                    PlaceholderScreen(
-                        title = "Profile",
-                        text = "Here users will see their profile and settings."
-                    )
+                    ProfileScreen()
                 }
             }
         }
