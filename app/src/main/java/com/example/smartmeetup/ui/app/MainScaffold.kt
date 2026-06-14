@@ -29,17 +29,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.smartmeetup.data.dummy.dummyEvents
 import com.example.smartmeetup.ui.chat.AllMessagesScreen
+import com.example.smartmeetup.ui.chat.ChatScreen
 import com.example.smartmeetup.ui.create.CreateEventScreen
+import com.example.smartmeetup.ui.events.components.ParticipantList
+import com.example.smartmeetup.ui.events.screens.EventJoinedScreen
+import com.example.smartmeetup.ui.events.screens.EventJoinedStatus
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.map.MapScreen
 import com.example.smartmeetup.ui.profile.ProfileScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
+import com.example.smartmeetup.viewmodel.EventViewModel
 import com.example.smartmeetup.viewmodel.MapViewModel
 
-// Enum für die verschiedenen Hauptbereiche der App.
-// Jeder Tab besitzt einen Titel, der später z. B. für Labels genutzt werden kann.
 private enum class MainTab(
     val title: String
 ) {
@@ -49,26 +51,32 @@ private enum class MainTab(
     Profile("Profile")
 }
 
-// Aktiviert experimentelle Material-3-APIs, da TopAppBar diese Annotation benötigt.
+private enum class MyEventsScreen {
+    EventList,
+    EventJoined,
+    Participants,
+    Chat
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(
     modifier: Modifier = Modifier
 ) {
-    // Speichert den aktuell ausgewählten Tab.
-    // remember sorgt dafür, dass der Zustand bei Recomposition erhalten bleibt.
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
     var showCreateEventScreen by remember { mutableStateOf(false) }
+    var myEventsScreen by remember { mutableStateOf(MyEventsScreen.EventList) }
 
     val mapViewModel: MapViewModel = viewModel()
     val mapUiState by mapViewModel.uiState.collectAsState()
 
-    // Scaffold stellt die Grundstruktur der App bereit:
-    // TopAppBar, Bottom Navigation und Inhaltsbereich.
+    val eventViewModel: EventViewModel = viewModel()
+    val joinedEvents by eventViewModel.joinedEvents.collectAsState()
+    val selectedEvent by eventViewModel.selectedEvent.collectAsState()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
 
-        // Obere App-Leiste mit dem App-Namen
         topBar = {
             TopAppBar(
                 title = {
@@ -77,17 +85,18 @@ fun MainScaffold(
             )
         },
 
-        // Untere Navigation zu den Hauptbereichen der App
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.height(96.dp),
                 containerColor = Color.White,
                 tonalElevation = 4.dp
             ) {
-                //Events Map
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Events,
-                    onClick = { selectedTab = MainTab.Events },
+                    onClick = {
+                        selectedTab = MainTab.Events
+                        showCreateEventScreen = false
+                    },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Map,
@@ -98,19 +107,15 @@ fun MainScaffold(
                     label = {
                         Text("Events")
                     },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF007AFF),
-                        selectedTextColor = Color(0xFF007AFF),
-                        unselectedIconColor = Color(0xFF8E8E93),
-                        unselectedTextColor = Color(0xFF8E8E93),
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = smartMeetupNavigationItemColors()
                 )
 
-                //Gespeicherte Events
                 NavigationBarItem(
                     selected = selectedTab == MainTab.MyEvents,
-                    onClick = { selectedTab = MainTab.MyEvents },
+                    onClick = {
+                        selectedTab = MainTab.MyEvents
+                        myEventsScreen = MyEventsScreen.EventList
+                    },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Bookmark,
@@ -121,19 +126,14 @@ fun MainScaffold(
                     label = {
                         Text("My Events")
                     },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF007AFF),
-                        selectedTextColor = Color(0xFF007AFF),
-                        unselectedIconColor = Color(0xFF8E8E93),
-                        unselectedTextColor = Color(0xFF8E8E93),
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = smartMeetupNavigationItemColors()
                 )
 
-                //Messages
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Messages,
-                    onClick = { selectedTab = MainTab.Messages },
+                    onClick = {
+                        selectedTab = MainTab.Messages
+                    },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Forum,
@@ -144,19 +144,14 @@ fun MainScaffold(
                     label = {
                         Text("Messages")
                     },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF007AFF),
-                        selectedTextColor = Color(0xFF007AFF),
-                        unselectedIconColor = Color(0xFF8E8E93),
-                        unselectedTextColor = Color(0xFF8E8E93),
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = smartMeetupNavigationItemColors()
                 )
 
-                //Profile
                 NavigationBarItem(
                     selected = selectedTab == MainTab.Profile,
-                    onClick = { selectedTab = MainTab.Profile },
+                    onClick = {
+                        selectedTab = MainTab.Profile
+                    },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Person,
@@ -167,37 +162,33 @@ fun MainScaffold(
                     label = {
                         Text("Profile")
                     },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF007AFF),
-                        selectedTextColor = Color(0xFF007AFF),
-                        unselectedIconColor = Color(0xFF8E8E93),
-                        unselectedTextColor = Color(0xFF8E8E93),
-                        indicatorColor = Color.Transparent
-                    )
+                    colors = smartMeetupNavigationItemColors()
                 )
             }
         }
-
     ) { innerPadding ->
 
-        // Box dient als Container für den eigentlichen Inhalt.
-        // Das Padding verhindert, dass Inhalte unter TopAppBar oder NavigationBar liegen.
         Box(
             modifier = Modifier.padding(innerPadding)
         ) {
-            // Je nach ausgewähltem Tab wird ein anderer Screen angezeigt.
             when (selectedTab) {
 
                 MainTab.Events -> {
                     if (showCreateEventScreen) {
                         CreateEventScreen(
-                            onCloseClick = { showCreateEventScreen = false },
-                            onPublishClick = { showCreateEventScreen = false }
+                            onCloseClick = {
+                                showCreateEventScreen = false
+                            },
+                            onPublishClick = {
+                                showCreateEventScreen = false
+                            }
                         )
                     } else {
                         MapScreen(
                             uiState = mapUiState,
-                            onCreateEventClick = { showCreateEventScreen = true },
+                            onCreateEventClick = {
+                                showCreateEventScreen = true
+                            },
                             onLocationPermissionResult = mapViewModel::onLocationPermissionResult,
                             onRefreshLocationClick = mapViewModel::refreshUserLocation
                         )
@@ -205,7 +196,81 @@ fun MainScaffold(
                 }
 
                 MainTab.MyEvents -> {
-                    EventListScreen(events = dummyEvents)
+                    when (myEventsScreen) {
+
+                        MyEventsScreen.EventList -> {
+                            EventListScreen(
+                                events = joinedEvents,
+                                onEventClick = { event ->
+                                    eventViewModel.selectEvent(event.id)
+                                    myEventsScreen = MyEventsScreen.EventJoined
+                                }
+                            )
+                        }
+
+                        MyEventsScreen.EventJoined -> {
+                            selectedEvent?.let { event ->
+                                EventJoinedScreen(
+                                    event = event,
+                                    status = EventJoinedStatus.NOT_STARTED,
+                                    onBackClick = {
+                                        myEventsScreen = MyEventsScreen.EventList
+                                    },
+                                    onParticipantsClick = {
+                                        myEventsScreen = MyEventsScreen.Participants
+                                    },
+                                    onChatClick = {
+                                        myEventsScreen = MyEventsScreen.Chat
+                                    },
+                                    onLeaveEventClick = {
+                                        eventViewModel.leaveEvent(event.id)
+                                        myEventsScreen = MyEventsScreen.EventList
+                                    }
+                                )
+                            } ?: EventListScreen(
+                                events = joinedEvents,
+                                onEventClick = { event ->
+                                    eventViewModel.selectEvent(event.id)
+                                    myEventsScreen = MyEventsScreen.EventJoined
+                                }
+                            )
+                        }
+
+                        MyEventsScreen.Participants -> {
+                            selectedEvent?.let { event ->
+                                ParticipantList(
+                                    participants = event.participants,
+                                    participantStatus = event.participantStatus,
+                                    onBackClick = {
+                                        myEventsScreen = MyEventsScreen.EventJoined
+                                    }
+                                )
+                            } ?: EventListScreen(
+                                events = joinedEvents,
+                                onEventClick = { event ->
+                                    eventViewModel.selectEvent(event.id)
+                                    myEventsScreen = MyEventsScreen.EventJoined
+                                }
+                            )
+                        }
+
+                        MyEventsScreen.Chat -> {
+                            selectedEvent?.let { event ->
+                                ChatScreen(
+                                    chatTitle = event.title,
+                                    onBackClick = {
+                                        myEventsScreen = MyEventsScreen.EventJoined
+                                    }
+                                )
+                            } ?: EventListScreen(
+                                events = joinedEvents,
+                                onEventClick = { event ->
+                                    eventViewModel.selectEvent(event.id)
+                                    myEventsScreen = MyEventsScreen.EventJoined
+                                }
+                            )
+                        }
+                    }
                 }
 
                 MainTab.Messages -> {
@@ -220,8 +285,16 @@ fun MainScaffold(
     }
 }
 
-// Preview-Funktion für Android Studio.
-// Damit kann der MainScaffold direkt in der Vorschau angezeigt werden.
+@Composable
+private fun smartMeetupNavigationItemColors() =
+    NavigationBarItemDefaults.colors(
+        selectedIconColor = Color(0xFF007AFF),
+        selectedTextColor = Color(0xFF007AFF),
+        unselectedIconColor = Color(0xFF8E8E93),
+        unselectedTextColor = Color(0xFF8E8E93),
+        indicatorColor = Color.Transparent
+    )
+
 @Preview(showBackground = true)
 @Composable
 fun MainScaffoldPreview() {
