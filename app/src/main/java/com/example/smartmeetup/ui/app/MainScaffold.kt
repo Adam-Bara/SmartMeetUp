@@ -41,12 +41,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 // Dummy-Daten und Screens der App
-import com.example.smartmeetup.data.dummy.dummyEvents
+//Update: dummyEvents wird nicht mehr verwendet, da die Daten nun von eventUiState.events stammen
 import com.example.smartmeetup.ui.events.screens.EventListScreen
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import com.example.smartmeetup.ui.map.MapScreen
 import com.example.smartmeetup.ui.create.CreateEventScreen
 import com.example.smartmeetup.ui.chat.AllMessagesScreen
+import com.example.smartmeetup.ui.chat.ChatScreen
+import com.example.smartmeetup.ui.chat.ChatViewModel
+import com.example.smartmeetup.ui.events.screens.EventJoinedScreen
+import com.example.smartmeetup.ui.events.screens.EventJoinedStatus
+import com.example.smartmeetup.ui.chat.ChatUiState
 
 // Enum für die verschiedenen Hauptbereiche der App.
 // Jeder Tab besitzt einen Titel, der später z. B. für Labels genutzt werden kann.
@@ -58,7 +63,11 @@ private enum class MainTab(
     Messages("Messages"),
     Profile("Profile")
 }
-
+// Defines the sub-screens within the Messages navigation flow.
+private enum class MessageFlowScreen {
+    MessageList,
+    Chat
+}
 // Aktiviert experimentelle Material-3-APIs, da TopAppBar diese Annotation benötigt.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,10 +78,16 @@ fun MainScaffold(
     // remember sorgt dafür, dass der Zustand bei Recomposition erhalten bleibt.
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
     var showCreateEventScreen by remember { mutableStateOf(false) }
+    var showEventDetailScreen by remember { mutableStateOf(false) }
     val eventViewModel =
         remember { EventViewModel() } //We keep the event data here so MapScreen and EventListScreen use the same events as shared event data
     val eventUiState by eventViewModel.uiState.collectAsState() //Later, other screens can use this too instead of loading dummy data separately
+    val chatViewModel = remember { ChatViewModel() }
+    val chatUiState by chatViewModel.uiState.collectAsState()
 
+    var messageFlowScreen by remember {
+        mutableStateOf(MessageFlowScreen.MessageList)
+    }
     // Scaffold stellt die Grundstruktur der App bereit:
     // TopAppBar, Bottom Navigation und Inhaltsbereich.
     Scaffold(
@@ -120,7 +135,10 @@ fun MainScaffold(
                 //Gespeicherte Events
                 NavigationBarItem(
                     selected = selectedTab == MainTab.MyEvents,
-                    onClick = { selectedTab = MainTab.MyEvents },
+                    onClick = {
+                        selectedTab = MainTab.MyEvents
+                        showEventDetailScreen = false //tapping the bottom tab always brings you back to the list
+                    },
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Bookmark,
@@ -204,9 +222,10 @@ fun MainScaffold(
                             onCloseClick = {
                                 showCreateEventScreen = false
                             },
-                            onPublishClick = {
+                            onPublishClick = { //after publishing a new event, it goes back to the My Events list, not into some old selected event detail
                                 eventViewModel.createMockEventFromForm()
                                 showCreateEventScreen = false
+                                showEventDetailScreen = false
                                 selectedTab = MainTab.MyEvents
                             }
                         )
@@ -219,18 +238,38 @@ fun MainScaffold(
                 }
 
                 MainTab.MyEvents -> {
-                    EventListScreen(
-                        events = eventUiState.events,
-                        onEventClick = { event ->
-                            eventViewModel.selectEvent(event.id)
-                        }
-                    )
+                    val selectedEvent = eventUiState.selectedEvent
+
+                    if (showEventDetailScreen && selectedEvent != null) {
+                        EventJoinedScreen(
+                            event = selectedEvent,
+                            status = EventJoinedStatus.NOT_STARTED,
+                            onBackClick = {
+                                showEventDetailScreen = false
+                            }
+                        )
+                    } else {
+                        EventListScreen(
+                            events = eventUiState.events,
+                            onEventClick = { event ->
+                                eventViewModel.selectEvent(event.id)
+                                showEventDetailScreen = true
+                            }
+                        )
+                    }
                 }
 
                 MainTab.Messages -> {
-                    PlaceholderScreen(
-                        title = "Messages",
-                        text = "Here users will see a list of all messages."
+                    MessagesTabContent(
+                        messageFlowScreen = messageFlowScreen,
+                        chatUiState = chatUiState,
+                        onConversationClick = { eventId ->
+                            chatViewModel.selectConversation(eventId)
+                            messageFlowScreen = MessageFlowScreen.Chat
+                        },
+                        onBackClick = {
+                            messageFlowScreen = MessageFlowScreen.MessageList
+                        }
                     )
                 }
 
@@ -244,7 +283,33 @@ fun MainScaffold(
         }
     }
 }
+// Manages the navigation between the list of all messages and an active chat conversation.
+@Composable
+private fun MessagesTabContent(
+    messageFlowScreen: MessageFlowScreen,
+    chatUiState: ChatUiState,
+    onConversationClick: (Int) -> Unit,
+    onBackClick: () -> Unit
+) {
+    when (messageFlowScreen) {
+        MessageFlowScreen.MessageList -> {
+            AllMessagesScreen(
+                conversations = chatUiState.conversations,
+                onMessageClick = { conversation ->
+                    onConversationClick(conversation.eventId)
+                }
+            )
+        }
 
+        MessageFlowScreen.Chat -> {
+            ChatScreen(
+                chatTitle = chatUiState.selectedConversation?.title ?: "Chat",
+                messages = chatUiState.messages,
+                onBackClick = onBackClick
+            )
+        }
+    }
+}
 // Preview-Funktion für Android Studio.
 // Damit kann der MainScaffold direkt in der Vorschau angezeigt werden.
 @Preview(showBackground = true)
