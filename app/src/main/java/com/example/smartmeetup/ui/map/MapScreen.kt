@@ -6,14 +6,16 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement // NEU
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row // NEU
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,7 +24,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +40,7 @@ import com.example.smartmeetup.model.MeetupEvent
 import com.example.smartmeetup.ui.events.screens.EventPreviewScreen
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
@@ -52,6 +58,13 @@ fun MapScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    // GEÄNDERT:
+    // Wir merken uns die MapView, damit die eigenen Compose-Zoombuttons
+    // später auf mapView.controller zugreifen können.
+    var mapViewForZoomControls by remember {
+        mutableStateOf<MapView?>(null)
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -80,16 +93,32 @@ fun MapScreen(
             factory = { viewContext ->
                 MapView(viewContext).apply {
                     setTileSource(TileSourceFactory.MAPNIK)
+
+                    // Bestehende Gesten bleiben aktiv:
+                    // Pinch-to-zoom und Verschieben funktionieren weiterhin.
                     setMultiTouchControls(true)
+
+                    // GEÄNDERT:
+                    // Die Standard-Zoom-Buttons von osmdroid werden ausgeblendet.
+                    // Dadurch liegen sie nicht mehr hinter Event Filter / Event erstellen.
+                    zoomController.setVisibility(
+                        CustomZoomButtonsController.Visibility.NEVER
+                    )
 
                     controller.setZoom(15.0)
 
                     controller.setCenter(
                         GeoPoint(52.5200, 13.4050)
                     )
+
+                    mapViewForZoomControls = this
                 }
             },
             update = { mapView ->
+                // GEÄNDERT:
+                // Sicherheitshalber wird die aktuelle MapView auch im Update gesetzt.
+                mapViewForZoomControls = mapView
+
                 mapView.overlays.clear()
 
                 val userLatitude = uiState.userLatitude
@@ -171,10 +200,31 @@ fun MapScreen(
                 .padding(top = 16.dp)
         )
 
-        // GEÄNDERT:
-        // Statt nur CreateEventButton gibt es jetzt eine Button-Reihe.
-        // Links: Event Filter ohne Funktion.
-        // Rechts: Event erstellen mit bestehender Funktion.
+        // NEU:
+        // Eigene Zoom-Buttons als Compose Overlay.
+        // Sie liegen rechts mittig und nicht mehr unten hinter den Action-Buttons.
+        MapZoomControls(
+            onZoomInClick = {
+                mapViewForZoomControls?.let { mapView ->
+                    mapView.controller.setZoom(
+                        mapView.zoomLevelDouble + 1.0
+                    )
+                    mapView.invalidate()
+                }
+            },
+            onZoomOutClick = {
+                mapViewForZoomControls?.let { mapView ->
+                    mapView.controller.setZoom(
+                        mapView.zoomLevelDouble - 1.0
+                    )
+                    mapView.invalidate()
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp)
+        )
+
         MapActionButtons(
             onCreateEventClick = onCreateEventClick,
             modifier = Modifier
@@ -230,6 +280,62 @@ private fun EventPreviewOverlay(
 }
 
 // NEU:
+// Eigene Zoom-Controls.
+// Vorteil: Die Position ist vollständig durch Compose steuerbar.
+@Composable
+private fun MapZoomControls(
+    onZoomInClick: () -> Unit,
+    onZoomOutClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ZoomButton(
+            text = "+",
+            onClick = onZoomInClick
+        )
+
+        ZoomButton(
+            text = "−",
+            onClick = onZoomOutClick
+        )
+    }
+}
+
+// NEU:
+// Kleiner runder Button für + und -.
+// Ist bewusst separat, damit der Code wiederverwendbar und übersichtlich bleibt.
+@Composable
+private fun ZoomButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.size(48.dp),
+        onClick = onClick,
+        shape = CircleShape,
+        color = Color.White,
+        tonalElevation = 6.dp,
+        shadowElevation = 6.dp
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0368F6)
+            )
+        }
+    }
+}
+
 // Diese Row platziert den Filter-Button links neben dem Create-Button.
 @Composable
 private fun MapActionButtons(
