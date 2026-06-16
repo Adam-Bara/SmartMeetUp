@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Forum
@@ -32,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.smartmeetup.ui.chat.AllMessagesScreen
 import com.example.smartmeetup.ui.chat.ChatScreen
 import com.example.smartmeetup.ui.create.CreateEventScreen
+import com.example.smartmeetup.ui.events.components.EventCard
 import com.example.smartmeetup.ui.events.components.ParticipantList
 import com.example.smartmeetup.ui.events.screens.EventJoinedScreen
 import com.example.smartmeetup.ui.events.screens.EventJoinedStatus
@@ -51,6 +54,12 @@ private enum class MainTab(
     Profile("Profile")
 }
 
+private enum class EventsScreen {
+    Map,
+    CreateEvent,
+    EventDetails
+}
+
 private enum class MyEventsScreen {
     EventList,
     EventJoined,
@@ -64,7 +73,8 @@ fun MainScaffold(
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableStateOf(MainTab.Events) }
-    var showCreateEventScreen by remember { mutableStateOf(false) }
+    var eventsScreen by remember { mutableStateOf(EventsScreen.Map) }
+    var selectedPreviewEventId by remember { mutableStateOf<Int?>(null) }
     var myEventsScreen by remember { mutableStateOf(MyEventsScreen.EventList) }
 
     val mapViewModel: MapViewModel = viewModel()
@@ -73,6 +83,10 @@ fun MainScaffold(
     val eventViewModel: EventViewModel = viewModel()
     val joinedEvents by eventViewModel.joinedEvents.collectAsState()
     val selectedEvent by eventViewModel.selectedEvent.collectAsState()
+
+    val selectedPreviewEvent = mapUiState.nearbyEvents.firstOrNull { event ->
+        event.id == selectedPreviewEventId
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -95,7 +109,8 @@ fun MainScaffold(
                     selected = selectedTab == MainTab.Events,
                     onClick = {
                         selectedTab = MainTab.Events
-                        showCreateEventScreen = false
+                        eventsScreen = EventsScreen.Map
+                        selectedPreviewEventId = null
                     },
                     icon = {
                         Icon(
@@ -114,6 +129,8 @@ fun MainScaffold(
                     selected = selectedTab == MainTab.MyEvents,
                     onClick = {
                         selectedTab = MainTab.MyEvents
+                        eventsScreen = EventsScreen.Map
+                        selectedPreviewEventId = null
                         myEventsScreen = MyEventsScreen.EventList
                     },
                     icon = {
@@ -133,6 +150,8 @@ fun MainScaffold(
                     selected = selectedTab == MainTab.Messages,
                     onClick = {
                         selectedTab = MainTab.Messages
+                        eventsScreen = EventsScreen.Map
+                        selectedPreviewEventId = null
                     },
                     icon = {
                         Icon(
@@ -151,6 +170,8 @@ fun MainScaffold(
                     selected = selectedTab == MainTab.Profile,
                     onClick = {
                         selectedTab = MainTab.Profile
+                        eventsScreen = EventsScreen.Map
+                        selectedPreviewEventId = null
                     },
                     icon = {
                         Icon(
@@ -174,24 +195,87 @@ fun MainScaffold(
             when (selectedTab) {
 
                 MainTab.Events -> {
-                    if (showCreateEventScreen) {
-                        CreateEventScreen(
-                            onCloseClick = {
-                                showCreateEventScreen = false
-                            },
-                            onPublishClick = {
-                                showCreateEventScreen = false
-                            }
-                        )
-                    } else {
-                        MapScreen(
-                            uiState = mapUiState,
-                            onCreateEventClick = {
-                                showCreateEventScreen = true
-                            },
-                            onLocationPermissionResult = mapViewModel::onLocationPermissionResult,
-                            onRefreshLocationClick = mapViewModel::refreshUserLocation
-                        )
+                    when (eventsScreen) {
+                        EventsScreen.Map -> {
+                            MapScreen(
+                                uiState = mapUiState,
+                                selectedPreviewEvent = selectedPreviewEvent,
+                                onEventPinClick = { event ->
+                                    selectedPreviewEventId = event.id
+                                },
+                                onDismissEventPreview = {
+                                    selectedPreviewEventId = null
+                                },
+                                onShowEventDetailsClick = { event ->
+                                    eventViewModel.selectEvent(event.id)
+                                    selectedPreviewEventId = null
+                                    eventsScreen = EventsScreen.EventDetails
+                                },
+                                onCreateEventClick = {
+                                    selectedPreviewEventId = null
+                                    eventsScreen = EventsScreen.CreateEvent
+                                },
+                                onLocationPermissionResult = mapViewModel::onLocationPermissionResult,
+                                onRefreshLocationClick = mapViewModel::refreshUserLocation
+                            )
+                        }
+
+                        EventsScreen.CreateEvent -> {
+                            CreateEventScreen(
+                                onCloseClick = {
+                                    eventsScreen = EventsScreen.Map
+                                },
+                                onPublishClick = {
+                                    eventsScreen = EventsScreen.Map
+                                }
+                            )
+                        }
+
+                        EventsScreen.EventDetails -> {
+                            selectedEvent?.let { event ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .verticalScroll(rememberScrollState())
+                                ) {
+                                    EventCard(
+                                        event = event,
+                                        onCloseClick = {
+                                            eventViewModel.clearSelectedEvent()
+                                            eventsScreen = EventsScreen.Map
+                                        },
+                                        onParticipantsClick = {
+                                            selectedTab = MainTab.MyEvents
+                                            myEventsScreen = MyEventsScreen.Participants
+                                        },
+                                        onJoinClick = {
+                                            myEventsScreen = MyEventsScreen.EventJoined
+                                            selectedTab = MainTab.MyEvents
+                                        }
+                                    )
+                                }
+                            } ?: MapScreen(
+                                uiState = mapUiState,
+                                selectedPreviewEvent = selectedPreviewEvent,
+                                onEventPinClick = { event ->
+                                    selectedPreviewEventId = event.id
+                                },
+                                onDismissEventPreview = {
+                                    selectedPreviewEventId = null
+                                },
+                                onShowEventDetailsClick = { event ->
+                                    eventViewModel.selectEvent(event.id)
+                                    selectedPreviewEventId = null
+                                    eventsScreen = EventsScreen.EventDetails
+                                },
+                                onCreateEventClick = {
+                                    selectedPreviewEventId = null
+                                    eventsScreen = EventsScreen.CreateEvent
+                                },
+                                onLocationPermissionResult = mapViewModel::onLocationPermissionResult,
+                                onRefreshLocationClick = mapViewModel::refreshUserLocation
+                            )
+                        }
                     }
                 }
 
