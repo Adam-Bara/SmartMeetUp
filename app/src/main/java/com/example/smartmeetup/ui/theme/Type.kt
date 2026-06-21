@@ -1,3 +1,7 @@
+// File Purpose: Defines the typography and text styles for the app.
+// Communication: Theme.kt and all UI components displaying text.
+// Owner: Rina
+
 package com.example.smartmeetup.ui.theme
 
 import androidx.compose.material3.Typography

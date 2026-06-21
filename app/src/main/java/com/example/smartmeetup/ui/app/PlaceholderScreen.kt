@@ -1,3 +1,7 @@
+// File Purpose: A reusable screen for displaying placeholder content for unimplemented features.
+// Communication: MainScaffold, SmartMeetupApp.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.app
 
 // Layout-Imports für Spaltenlayout, Abstände, Vollbildgröße und Innenabstand

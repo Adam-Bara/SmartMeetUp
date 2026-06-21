@@ -1,3 +1,7 @@
+// File Purpose: Defines the color palette for the SmartMeetUp theme.
+// Communication: Theme.kt and all UI components for consistent styling.
+// Owner: Rina
+
 package com.example.smartmeetup.ui.theme
 
 import androidx.compose.ui.graphics.Color

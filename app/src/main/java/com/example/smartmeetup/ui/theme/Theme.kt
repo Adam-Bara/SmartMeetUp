@@ -1,3 +1,7 @@
+// File Purpose: Main theme definition for the app, configuring colors, typography, and dynamic styling.
+// Communication: SmartMeetupApp, MainActivity, and all Composable functions.
+// Owner: Rina
+
 package com.example.smartmeetup.ui.theme
 
 import android.app.Activity

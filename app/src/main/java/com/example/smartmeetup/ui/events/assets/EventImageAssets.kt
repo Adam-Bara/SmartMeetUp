@@ -1,3 +1,7 @@
+// File Purpose: Utility mapping to link EventImageType to corresponding drawable resources.
+// Communication: MeetupEvent, EventCard, EventPreviewScreen.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.events.assets
 
 import androidx.annotation.DrawableRes

@@ -1,3 +1,7 @@
+// File Purpose: Entry point of the Android application. Initializes Map configuration and sets the content to SmartMeetupApp.
+// Communication: OsmDroidConfig, SmartMeetupApp, SmartMeetUpTheme.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup
 
 // Bundle enthält gespeicherte Zustände, die beim Start der Activity übergeben werden können.

@@ -1,3 +1,7 @@
+// File Purpose: ViewModel for the map screen, managing device location, permission states, and filtering nearby events.
+// Communication: LocationRepository, EventRepository, MapUiState, MapScreen.
+// Owner: Rina
+
 package com.example.smartmeetup.viewmodel
 
 import android.app.Application

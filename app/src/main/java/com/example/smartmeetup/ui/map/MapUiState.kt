@@ -1,3 +1,7 @@
+// File Purpose: Data class representing the UI state of the MapScreen.
+// Communication: MapViewModel, MapScreen.
+// Owner: Rina
+
 package com.example.smartmeetup.ui.map
 
 import com.example.smartmeetup.model.MeetupEvent

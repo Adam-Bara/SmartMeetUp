@@ -1,3 +1,7 @@
+// File Purpose: UI for displaying the list of users who have joined a specific event.
+// Communication: User, MeetupEvent, EventJoinedScreen, EventCard.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.events.components
 
 import androidx.annotation.DrawableRes
@@ -41,10 +45,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.height
 
+// Screen displaying the list of all users joined to a specific event.
+// It is typically accessed from the EventCard or EventJoinedScreen to show
+// who is attending, pulling data from the MeetupEvent's participant list.
 @Composable
 fun ParticipantList(
-    participants: List<User>,
-    participantStatus: String,
+    participants: List<User>, // List of User objects defined in the model package
+    participantStatus: String, // String representing enrollment (e.g. "12/20")
     onBackClick: () -> Unit
 ) {
     Column(
@@ -57,7 +64,8 @@ fun ParticipantList(
             participantStatus = participantStatus,
             onBackClick = onBackClick
         )
-//orEachIndexed loops through the whole participant list and gives both the index and the participant
+        // forEachIndexed loops through the whole participant list and gives both the index and the participant.
+        // We use the index to assign a stable but alternating avatar from our local resource pool.
         participants.forEachIndexed { index, participant ->
             ParticipantRow(
                 participant = participant,
@@ -67,6 +75,7 @@ fun ParticipantList(
     }
 }
 
+// Header component containing navigation back and the current attendee count.
 @Composable
 private fun ParticipantListHeader(
     participantStatus: String,
@@ -141,7 +150,10 @@ private fun ParticipantListHeader(
         }
     }
 }
-@DrawableRes //avatars is our reusable pool of profile images. index % avatars.size means: once we reach the end of the image list, start again from the beginning
+// Helper function to cycle through available profile images.
+// This ensures that even without unique user-uploaded photos, the list looks
+// varied and visual, matching the aesthetic of the profile_image_* assets.
+@DrawableRes
 private fun participantAvatarForIndex(index: Int): Int {
     val avatars = listOf(
         R.drawable.profile_image_mountain,
@@ -153,8 +165,12 @@ private fun participantAvatarForIndex(index: Int): Int {
         R.drawable.profile_image_star
     )
 
+    // index % avatars.size means: once we reach the end of the image list, start again from the beginning
     return avatars[index % avatars.size]
 }
+
+// Renders a single row representing one user.
+// It displays the user's displayName from the User model alongside their assigned avatar.
 @Composable
 private fun ParticipantRow(
     participant: User,
@@ -194,6 +210,10 @@ private fun ParticipantRow(
     }
 }
 
+/**
+ * Preview provider for the [ParticipantList] composable.
+ * Displays a sample participant list using data from [selectedDummyEvent].
+ */
 @Preview(showBackground = true)
 @Composable
 fun ParticipantListPreview() {

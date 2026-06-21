@@ -1,3 +1,7 @@
+// File Purpose: The primary scaffold of the app, managing bottom navigation and top app bar.
+// Communication: EventViewModel, MapViewModel, and all main tab screens (Events, Map, Messages, Profile).
+// Owner: Rina
+
 package com.example.smartmeetup.ui.app
 
 import androidx.compose.foundation.layout.Box

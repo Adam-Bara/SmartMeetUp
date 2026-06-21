@@ -1,3 +1,7 @@
+// File Purpose: Provides mock data for events and users to build and test the UI before database integration.
+// Communication: EventRepository, EventViewModel, and various UI screens using selectedDummyEvent.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.data.dummy //mock data for application, build and test the UI (screens, lists, cards) before the app is connected to a real database or server
 
 import com.example.smartmeetup.model.MeetupEvent   //definition of what both files look like aka templates pulling in
@@ -100,7 +104,7 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         latitude = 51.0236,
         longitude = 7.5632,
 
-        host = User(id = 3, displayName = "Jonas", username = "@jonas"),
+        host = User(id = 3, displayName = "Jonas", username = "@jonas"), //:TODO to change later with constant to avoid duplication strings
         participants = dummyParticipants.take(2),
         participantLimit = 6,
         status = EventStatus.Archived,

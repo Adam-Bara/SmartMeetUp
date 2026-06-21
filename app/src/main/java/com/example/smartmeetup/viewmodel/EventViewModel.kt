@@ -1,3 +1,7 @@
+// File Purpose: ViewModel for managing event-related state, such as the list of joined events and the currently selected event.
+// Communication: EventRepository, MeetupEvent, EventListScreen, EventJoinedScreen.
+// Owner: Rina
+
 package com.example.smartmeetup.viewmodel
 
 import androidx.lifecycle.ViewModel

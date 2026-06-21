@@ -1,3 +1,7 @@
+// File Purpose: Displays an overview of all event-related conversations and private messages.
+// Communication: MainScaffold, ChatScreen, MessageOverviewItem.
+// Owner: Adam
+
 package com.example.smartmeetup.ui.chat
 
 import androidx.compose.foundation.Image

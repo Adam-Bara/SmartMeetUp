@@ -1,3 +1,7 @@
+// File Purpose: UI screen that displays a grid of events, categorized by status (e.g., Live, Upcoming).
+// Communication: EventViewModel, MeetupEvent, EventCard, EventPreviewScreen.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.events.screens
 
 import androidx.compose.foundation.BorderStroke

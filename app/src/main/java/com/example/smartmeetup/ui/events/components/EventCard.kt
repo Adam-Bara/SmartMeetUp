@@ -1,3 +1,7 @@
+// File Purpose: Main card component for displaying event details, host info, and participant count.
+// Communication: EventListScreen, MeetupEvent, EventViewModel, ParticipantList.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.events.components
 
 import androidx.compose.foundation.Image
@@ -54,6 +58,9 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.smartmeetup.R
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.remember
+// Main card component for displaying detailed information about a MeetupEvent.
+// Used as a central UI element in the events discovery flow to show event
+// summaries, schedules, and host details.
 @Composable
 fun EventCard(
     event: MeetupEvent,
@@ -113,6 +120,9 @@ fun EventCard(
     }
 }
 
+// Displays the primary image for the event.
+// Uses eventImageRes() to map EventImageType (e.g., Park, Tennis) 
+// to the correct drawable resource in the assets package.
 @Composable
 private fun EventHeroImage(
     event: MeetupEvent,
@@ -158,6 +168,8 @@ private fun CloseButton(
     }
 }
 
+// Displays the event's category and a secondary label.
+// Dynamically renders information based on the MeetupEvent model's category field.
 @Composable
 private fun EventTitleRow(
     event: MeetupEvent,
@@ -185,6 +197,8 @@ private fun EventTitleRow(
     }
 }
 
+// Reusable layout for simple text-based event details.
+// Typically used for the "ABOUT" section to display the event description.
 @Composable
 private fun EventDetailSection(
     title: String,
@@ -210,6 +224,8 @@ private fun EventDetailSection(
     }
 }
 
+// Reusable layout for details requiring an icon (e.g., Time or Location).
+// Helps maintain visual consistency across the event's "WHEN" and "WHERE" sections.
 @Composable
 private fun EventIconDetailSection(
     title: String,
@@ -248,6 +264,8 @@ private fun EventIconDetailSection(
     }
 }
 
+// Displays information about the event host.
+// Links the event to a User profile and uses profile resources (e.g., profile_image_mountain).
 @Composable
 private fun HostedBySection(
     event: MeetupEvent,
@@ -286,6 +304,8 @@ private fun HostedBySection(
         }
     }
 }
+// Interaction point to view the list of people attending the event.
+// Connected to the ParticipantList component when clicked.
 @Composable
 private fun ParticipantsButton(
     participantStatus: String,
@@ -323,6 +343,13 @@ private fun ParticipantsButton(
     }
 }
 
+/**
+ * A primary action button that allows the user to join the event.
+ * Serves as the final call-to-action (CTA) in the event details card.
+ *
+ * @param onClick Callback triggered when the user clicks the button to join.
+ * @param modifier Modifier used to adjust the button's layout or styling.
+ */
 @Composable
 private fun JoinEventButton(
     onClick: () -> Unit,
@@ -346,6 +373,11 @@ private fun JoinEventButton(
     }
 }
 
+/**
+ * Preview provider for the [EventCard] component.
+ * It uses [selectedDummyEvent] to demonstrate how the event details,
+ * host information, and action buttons appear on a standard mobile screen.
+ */
 @Preview(
     showBackground = true,
     widthDp = 390,

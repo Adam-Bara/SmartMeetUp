@@ -1,3 +1,7 @@
+// File Purpose: UI for an active chat conversation, showing message bubbles, background, and input bar.
+// Communication: AllMessagesScreen, EventJoinedScreen, ChatUiMessage.
+// Owner: Adam
+
 package com.example.smartmeetup.ui.chat
 
 import androidx.compose.foundation.Image
@@ -162,6 +166,18 @@ private fun ChatHeader(
     }
 }
 
+/**
+ * Renders an individual chat message bubble.
+ *
+ * The bubble's appearance changes based on whether the message was sent by the current user
+ * or another participant:
+ * - Own messages are aligned to the end (right) with a green background.
+ * - Other messages are aligned to the start (left) with a light blue background.
+ * - The corner radii are adjusted to create a "tail" effect pointing towards the sender's side.
+ *
+ * @param message The [ChatUiMessage] data containing sender info, text, and timestamp.
+ * @param modifier The modifier to be applied to the layout.
+ */
 @Composable
 private fun ChatMessageBubble(
     message: ChatUiMessage,
@@ -242,6 +258,15 @@ private fun ChatMessageBubble(
     }
 }
 
+/**
+ * A bottom bar for chat message input.
+ *
+ * This composable provides a text input area and an attachment button. It handles
+ * keyboard insets using [WindowInsets.ime] and ensures padding for the system
+ * navigation bar.
+ *
+ * @param modifier The [Modifier] to be applied to the input bar.
+ */
 @Composable
 private fun ChatInputBar(
     modifier: Modifier = Modifier
@@ -288,6 +313,15 @@ private fun ChatInputBar(
     }
 }
 
+/**
+ * Data model representing a single message in the chat interface.
+ *
+ * @property senderName The name of the user who sent the message.
+ * @property text The actual content of the message.
+ * @property time The formatted string representing when the message was sent (e.g., "10:30 AM").
+ * @property isOwnMessage Boolean flag to determine if the message was sent by the current user,
+ * used to control the alignment and color of the message bubble.
+ */
 data class ChatUiMessage(
     val senderName: String,
     val text: String,
@@ -295,6 +329,10 @@ data class ChatUiMessage(
     val isOwnMessage: Boolean
 )
 
+/**
+ * A sample list of [ChatUiMessage] instances used for previewing the [ChatScreen]
+ * and as default data for the conversation UI.
+ */
 private val sampleChatMessages = listOf(
     ChatUiMessage(
         senderName = "Brooke",
@@ -334,6 +372,10 @@ private val sampleChatMessages = listOf(
     )
 )
 
+/**
+ * Provides a preview of the [ChatScreen] within the [SmartMeetUpTheme].
+ * It displays the chat interface with sample messages on a device with dimensions 390x844dp.
+ */
 @Preview(
     showBackground = true,
     widthDp = 390,

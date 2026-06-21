@@ -1,3 +1,7 @@
+// File Purpose: UI for displaying the map using OSMDroid, showing nearby events, and handling location permissions.
+// Communication: MapViewModel, MapUiState, MeetupEvent, EventPreviewScreen.
+// Owner: Rina
+
 package com.example.smartmeetup.ui.map
 
 import android.Manifest

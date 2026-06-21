@@ -1,3 +1,7 @@
+// File Purpose: Main entry point for the Compose UI. Kapselt die Grundstruktur der App.
+// Communication: MainScaffold, SmartMeetUpTheme.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.app
 
 // Compose-Import für Composable-Funktionen

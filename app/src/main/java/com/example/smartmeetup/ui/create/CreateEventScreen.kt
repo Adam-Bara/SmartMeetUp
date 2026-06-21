@@ -1,3 +1,7 @@
+// File Purpose: UI for the multi-step form to create a new meetup event.
+// Communication: MainScaffold, MeetupEvent (future), MapViewModel (future).
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.create
 
 import androidx.compose.foundation.Image
@@ -50,6 +54,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.ui.graphics.Brush
 
+// Orchestrates the multi-step event creation flow.
+// It integrates visual components like the image header and progress dots
+// with functional input rows, providing a unified entry point for users
+// to add new meetups to the system.
 @Composable
 fun CreateEventScreen(
     modifier: Modifier = Modifier,
@@ -67,14 +75,17 @@ fun CreateEventScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 118.dp)
         ) {
+            // Header with image upload and close button
             CreateEventHeader(
                 onCloseClick = onCloseClick
             )
 
+            // Step indicator
             CreateEventProgressDots(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
+            // Input fields for event details
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,11 +133,9 @@ fun CreateEventScreen(
             }
         }
 
+        // Sticky bottom action button with a soft white gradient background
         Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(150.dp)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -149,6 +158,7 @@ fun CreateEventScreen(
     }
 }
 
+// Header section that provides an interface for uploading event images.
 @Composable
 private fun CreateEventHeader(
     onCloseClick: () -> Unit,
@@ -236,6 +246,7 @@ private fun CreateEventHeader(
     }
 }
 
+// Visual indicator showing the progress of the multi-step event creation form.
 @Composable
 private fun CreateEventProgressDots(
     modifier: Modifier = Modifier
@@ -259,6 +270,9 @@ private fun CreateEventProgressDots(
     }
 }
 
+// Reusable template for event input fields (e.g., Name, Category, Date).
+// It features a consistent icon-label layout and an optional dropdown indicator
+// for fields that require a selection (connected to logic in future ViewModels).
 @Composable
 private fun CreateEventFieldRow(
     label: String,
@@ -335,6 +349,9 @@ private fun CreateEventFieldRow(
     }
 }
 
+// The primary action button to finalize event creation.
+// Positioned at the bottom with a gradient overlay to maintain visibility
+// while scrolling through the form details.
 @Composable
 private fun PublishEventButton(
     text: String,
@@ -362,6 +379,11 @@ private fun PublishEventButton(
     }
 }
 
+/**
+ * Preview for the [CreateEventScreen] composable.
+ * Displays the event creation flow in a standard mobile device format (390x844 dp)
+ * to verify the layout, input fields, and sticky action button.
+ */
 @Preview(
     showBackground = true,
     widthDp = 390,

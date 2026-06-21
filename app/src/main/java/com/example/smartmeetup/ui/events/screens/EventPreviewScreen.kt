@@ -1,3 +1,7 @@
+// File Purpose: UI component (overlay card) providing a quick summary of an event when selected on the map.
+// Communication: MapScreen, MeetupEvent, EventCard.
+// Owner: Rina
+
 package com.example.smartmeetup.ui.events.screens
 
 import androidx.compose.foundation.Image

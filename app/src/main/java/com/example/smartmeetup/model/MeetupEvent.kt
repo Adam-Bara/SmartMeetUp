@@ -1,3 +1,7 @@
+// File Purpose: Data model for a Meetup Event, including location, participants, and status details.
+// Communication: EventRepository, MapViewModel, EventCard, and many UI screens.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.model
 
 data class MeetupEvent(
@@ -30,6 +34,11 @@ data class MeetupEvent(
         get() = "$startTime Uhr bis $endTime Uhr"
 }
 
+/**
+ * Represents the current lifecycle and scheduling status of a [MeetupEvent].
+ *
+ * @property label A human-readable string used for displaying the status in the UI.
+ */
 enum class EventStatus(
     val label: String
 ) {

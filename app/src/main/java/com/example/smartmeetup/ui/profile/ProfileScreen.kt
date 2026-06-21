@@ -1,3 +1,7 @@
+// File Purpose: UI for the user profile, displaying statistics, bio, and interests.
+// Communication: MainScaffold, User (future).
+// Owner: Rina
+
 package com.example.smartmeetup.ui.profile
 
 import androidx.compose.foundation.background

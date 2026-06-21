@@ -1,3 +1,7 @@
+// File Purpose: UI for an event the user has joined, showing live status, a timer, and chat/participant links.
+// Communication: MeetupEvent, ParticipantList, ChatScreen, EventViewModel.
+// Owner: Daria Zecha
+
 package com.example.smartmeetup.ui.events.screens
 
 import androidx.annotation.DrawableRes
