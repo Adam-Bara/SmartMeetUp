@@ -1,5 +1,10 @@
-// File Purpose: Data model for a single chat message in a conversation.
-// Communication: ChatScreen and AllMessagesScreen for messaging features.
-// Owner: Adam
+package com.example.smartmeetup.model
 
-//Adams files
+data class ChatMessage(
+    val id: Int,
+    val eventId: Int,
+    val sender: User,
+    val text: String,
+    val time: String,
+    val isOwnMessage: Boolean
+)
