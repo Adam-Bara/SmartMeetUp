@@ -49,11 +49,12 @@ import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
 import com.example.smartmeetup.viewmodel.EventViewModel
 import com.example.smartmeetup.viewmodel.MapViewModel
 
+private const val MY_EVENTS_TITLE = "My Events"
 private enum class MainTab(
     val title: String
 ) {
     Events("Events"),
-    MyEvents("My Events"),
+    MyEvents(MY_EVENTS_TITLE),
     Messages("Messages"),
     Profile("Profile")
 }
@@ -71,6 +72,11 @@ private enum class MyEventsScreen {
     Chat
 }
 
+private enum class MessagesScreen {
+    Overview,
+    Chat
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(
@@ -80,6 +86,7 @@ fun MainScaffold(
     var eventsScreen by remember { mutableStateOf(EventsScreen.Map) }
     var selectedPreviewEventId by remember { mutableStateOf<Int?>(null) }
     var myEventsScreen by remember { mutableStateOf(MyEventsScreen.EventList) }
+    var messagesScreen by remember { mutableStateOf(MessagesScreen.Overview) }
 
     val mapViewModel: MapViewModel = viewModel()
     val mapUiState by mapViewModel.uiState.collectAsState()
@@ -140,12 +147,12 @@ fun MainScaffold(
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Bookmark,
-                            contentDescription = "My Events",
+                            contentDescription = MY_EVENTS_TITLE,
                             modifier = Modifier.size(22.dp)
                         )
                     },
                     label = {
-                        Text("My Events")
+                        Text(MY_EVENTS_TITLE)
                     },
                     colors = smartMeetupNavigationItemColors()
                 )
@@ -362,7 +369,24 @@ fun MainScaffold(
                 }
 
                 MainTab.Messages -> {
-                    AllMessagesScreen()
+                    when (messagesScreen) {
+                        MessagesScreen.Overview -> {
+                            AllMessagesScreen(
+                                onMessageClick = {
+                                    messagesScreen = MessagesScreen.Chat
+                                }
+                            )
+                        }
+
+                        MessagesScreen.Chat -> {
+                            ChatScreen(
+                                chatTitle = "Messages",
+                                onBackClick = {
+                                    messagesScreen = MessagesScreen.Overview
+                                }
+                            )
+                        }
+                    }
                 }
 
                 MainTab.Profile -> {
