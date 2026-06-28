@@ -1,7 +1,7 @@
 // File Purpose: Provides mock data for events and users to build and test the UI before database integration.
 // Communication: EventRepository, EventViewModel, and various UI screens using selectedDummyEvent.
 // Owner: Daria Zecha
-
+//TODO: Firebase + backUp storage (offline) + persistent
 package com.example.smartmeetup.data.dummy //mock data for application, build and test the UI (screens, lists, cards) before the app is connected to a real database or server
 
 import com.example.smartmeetup.model.MeetupEvent   //definition of what both files look like aka templates pulling in
