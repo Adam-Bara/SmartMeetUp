@@ -133,7 +133,7 @@ val dummyEvents = listOf(    //list of events that EventListScreen will be using
         imageType = EventImageType.Hiking
     ),
     MeetupEvent(
-        id = 127,
+        id = 128,
         title = "Hiking Trip 3",
         category = "Sport",
         previewText = "Last hike across the mountains",
