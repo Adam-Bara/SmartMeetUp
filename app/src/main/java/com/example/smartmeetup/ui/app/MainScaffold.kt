@@ -50,6 +50,7 @@ import com.example.smartmeetup.viewmodel.EventViewModel
 import com.example.smartmeetup.viewmodel.MapViewModel
 
 private const val MY_EVENTS_TITLE = "My Events"
+
 private enum class MainTab(
     val title: String
 ) {
@@ -236,7 +237,10 @@ fun MainScaffold(
                                 onCloseClick = {
                                     eventsScreen = EventsScreen.Map
                                 },
-                                onPublishClick = {
+                                onPublishClick = { formState ->
+                                    eventViewModel.createEventFromForm(formState)  //fix for dynamic title
+                                    selectedTab = MainTab.MyEvents
+                                    myEventsScreen = MyEventsScreen.EventList
                                     eventsScreen = EventsScreen.Map
                                 }
                             )
@@ -260,6 +264,7 @@ fun MainScaffold(
                                             myEventsScreen = MyEventsScreen.Participants
                                         },
                                         onJoinClick = {
+                                            eventViewModel.joinEvent(event.id)
                                             myEventsScreen = MyEventsScreen.EventJoined
                                             selectedTab = MainTab.MyEvents
                                         }

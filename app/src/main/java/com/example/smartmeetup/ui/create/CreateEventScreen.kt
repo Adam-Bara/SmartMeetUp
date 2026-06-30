@@ -1,6 +1,6 @@
-// File Purpose: UI for the multi-step form to create a new meetup event.
-// Communication: MainScaffold, MeetupEvent (future), MapViewModel (future).
-// Owner: Daria Zecha
+// File Purpose: Editable UI form for creating a new meetup event.
+// Communication: MainScaffold passes CreateEventFormState to EventViewModel.
+// Owner: Kaida
 
 package com.example.smartmeetup.ui.create
 
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,48 +21,74 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.smartmeetup.R
 import com.example.smartmeetup.ui.theme.SmartMeetUpTheme
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material.icons.outlined.CloudUpload
-import androidx.compose.ui.graphics.Brush
 
-// Orchestrates the multi-step event creation flow.
-// It integrates visual components like the image header and progress dots
-// with functional input rows, providing a unified entry point for users
-// to add new meetups to the system.
+data class CreateEventFormState(
+    val title: String,
+    val category: String,
+    val description: String,
+    val date: String,
+    val startTime: String,
+    val endTime: String,
+    val locationName: String,
+    val participantLimit: Int
+)
+
 @Composable
 fun CreateEventScreen(
     modifier: Modifier = Modifier,
     onCloseClick: () -> Unit = {},
-    onPublishClick: () -> Unit = {}
+    onPublishClick: (CreateEventFormState) -> Unit = {}
 ) {
+    var title by rememberSaveable { mutableStateOf("") }
+    var category by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var date by rememberSaveable { mutableStateOf("") }
+    var startTime by rememberSaveable { mutableStateOf("") }
+    var endTime by rememberSaveable { mutableStateOf("") }
+    var locationName by rememberSaveable { mutableStateOf("") }
+    var participantLimitText by rememberSaveable { mutableStateOf("") }
+
+    val participantLimit = participantLimitText.toIntOrNull() ?: 8
+    val canPublish = title.isNotBlank() && locationName.isNotBlank()
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -75,17 +100,14 @@ fun CreateEventScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 118.dp)
         ) {
-            // Header with image upload and close button
             CreateEventHeader(
                 onCloseClick = onCloseClick
             )
 
-            // Step indicator
             CreateEventProgressDots(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            // Input fields for event details
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,49 +115,84 @@ fun CreateEventScreen(
                     .padding(top = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(11.dp)
             ) {
-                CreateEventFieldRow(
+                CreateEventTextFieldRow(
                     label = "EVENT NAME",
-                    value = "Enter event name",
+                    value = title,
+                    onValueChange = { title = it },
+                    placeholder = "Enter event name",
                     icon = Icons.AutoMirrored.Outlined.List
                 )
 
-                CreateEventFieldRow(
+                CreateEventTextFieldRow(
                     label = "EVENT TYPE",
-                    value = "Select type",
-                    icon = Icons.Outlined.Sell,
-                    showDropdown = true
+                    value = category,
+                    onValueChange = { category = it },
+                    placeholder = "Study, sport, picnic...",
+                    icon = Icons.Outlined.Sell
                 )
 
-                CreateEventFieldRow(
+                CreateEventTextFieldRow(
                     label = "DESCRIPTION",
-                    value = "Add a description",
-                    icon = Icons.Outlined.Description
+                    value = description,
+                    onValueChange = { description = it },
+                    placeholder = "Add a description",
+                    icon = Icons.Outlined.Description,
+                    minLines = 3
                 )
 
-                CreateEventFieldRow(
-                    label = "WHEN",
-                    value = "select date and time",
+                CreateEventTextFieldRow(
+                    label = "DATE",
+                    value = date,
+                    onValueChange = { date = it },
+                    placeholder = "Today, 30.06.2026...",
                     icon = Icons.Outlined.AccessTime
                 )
 
-                CreateEventFieldRow(
+                CreateEventTextFieldRow(
+                    label = "START TIME",
+                    value = startTime,
+                    onValueChange = { startTime = it },
+                    placeholder = "18:00",
+                    icon = Icons.Outlined.AccessTime
+                )
+
+                CreateEventTextFieldRow(
+                    label = "END TIME",
+                    value = endTime,
+                    onValueChange = { endTime = it },
+                    placeholder = "20:00",
+                    icon = Icons.Outlined.AccessTime
+                )
+
+                CreateEventTextFieldRow(
                     label = "WHERE",
-                    value = "Add location",
+                    value = locationName,
+                    onValueChange = { locationName = it },
+                    placeholder = "Add location",
                     icon = Icons.Outlined.LocationOn
                 )
 
-                CreateEventFieldRow(
+                CreateEventTextFieldRow(
                     label = "PARTICIPANTS LIMIT",
-                    value = "Set participant limit",
+                    value = participantLimitText,
+                    onValueChange = { newValue ->
+                        if (newValue.all { character -> character.isDigit() }) {
+                            participantLimitText = newValue
+                        }
+                    },
+                    placeholder = "8",
                     icon = Icons.Outlined.People,
+                    keyboardType = KeyboardType.Number,
                     showDivider = false
                 )
             }
         }
 
-        // Sticky bottom action button with a soft white gradient background
         Box(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(110.dp)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -149,7 +206,21 @@ fun CreateEventScreen(
 
         PublishEventButton(
             text = "Publish Event",
-            onClick = onPublishClick,
+            enabled = canPublish,
+            onClick = {
+                onPublishClick(
+                    CreateEventFormState(
+                        title = title.trim(),
+                        category = category.ifBlank { "Meetup" }.trim(),
+                        description = description.ifBlank { "No description added yet." }.trim(),
+                        date = date.ifBlank { "Today" }.trim(),
+                        startTime = startTime.ifBlank { "18:00" }.trim(),
+                        endTime = endTime.ifBlank { "20:00" }.trim(),
+                        locationName = locationName.trim(),
+                        participantLimit = participantLimit
+                    )
+                )
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 34.dp)
@@ -158,7 +229,6 @@ fun CreateEventScreen(
     }
 }
 
-// Header section that provides an interface for uploading event images.
 @Composable
 private fun CreateEventHeader(
     onCloseClick: () -> Unit,
@@ -246,7 +316,6 @@ private fun CreateEventHeader(
     }
 }
 
-// Visual indicator showing the progress of the multi-step event creation form.
 @Composable
 private fun CreateEventProgressDots(
     modifier: Modifier = Modifier
@@ -270,16 +339,16 @@ private fun CreateEventProgressDots(
     }
 }
 
-// Reusable template for event input fields (e.g., Name, Category, Date).
-// It features a consistent icon-label layout and an optional dropdown indicator
-// for fields that require a selection (connected to logic in future ViewModels).
 @Composable
-private fun CreateEventFieldRow(
+private fun CreateEventTextFieldRow(
     label: String,
     value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    showDropdown: Boolean = false,
+    minLines: Int = 1,
+    keyboardType: KeyboardType = KeyboardType.Text,
     showDivider: Boolean = true
 ) {
     Row(
@@ -314,29 +383,30 @@ private fun CreateEventFieldRow(
                 color = Color(0xFF208E4A)
             )
 
-            Row(
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                placeholder = {
+                    Text(text = placeholder)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF6B7280),
-                    modifier = Modifier.weight(1f)
+                    .padding(top = 6.dp),
+                minLines = minLines,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = keyboardType
+                ),
+                textStyle = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                shape = RoundedCornerShape(14.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF0368F6),
+                    unfocusedBorderColor = Color(0xFFE5E7EB),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
                 )
-
-                if (showDropdown) {
-                    Icon(
-                        imageVector = Icons.Outlined.KeyboardArrowDown,
-                        contentDescription = "Select event type",
-                        tint = Color(0xFF6B7280),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+            )
 
             if (showDivider) {
                 HorizontalDivider(
@@ -349,22 +419,29 @@ private fun CreateEventFieldRow(
     }
 }
 
-// The primary action button to finalize event creation.
-// Positioned at the bottom with a gradient overlay to maintain visibility
-// while scrolling through the form details.
 @Composable
 private fun PublishEventButton(
     text: String,
+    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val buttonColor = if (enabled) {
+        Color(0xFF0368F6)
+    } else {
+        Color(0xFFC4C6CA)
+    }
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .height(58.dp)
-            .clickable(onClick = onClick),
+            .clickable(
+                enabled = enabled,
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(18.dp),
-        color = Color(0xFF0368F6)
+        color = buttonColor
     ) {
         Box(
             contentAlignment = Alignment.Center
@@ -379,11 +456,6 @@ private fun PublishEventButton(
     }
 }
 
-/**
- * Preview for the [CreateEventScreen] composable.
- * Displays the event creation flow in a standard mobile device format (390x844 dp)
- * to verify the layout, input fields, and sticky action button.
- */
 @Preview(
     showBackground = true,
     widthDp = 390,

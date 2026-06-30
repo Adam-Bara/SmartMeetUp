@@ -195,7 +195,7 @@ private fun EventJoinedTitle(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Event ${event.id}",
+                text = event.title,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF0B1220)
@@ -330,7 +330,7 @@ private fun EventJoinedInfoCard(
         ) {
             EventJoinedTextSection(
                 title = "ABOUT",
-                body = "A relaxed football meet up" //manually adjusted as Dummy text info too long
+                body = event.description
             )
 
             EventJoinedDivider()
@@ -338,7 +338,7 @@ private fun EventJoinedInfoCard(
             EventJoinedIconSection(
                 title = "WHEN",
                 icon = Icons.Outlined.AccessTime,
-                body = "2PM to 4PM  |  24.05.26" //manually adjusted as Dummy data text too long
+                body = "${event.startTime} to ${event.endTime}  |  ${event.date}"
             )
 
             EventJoinedDivider()
@@ -355,7 +355,6 @@ private fun EventJoinedInfoCard(
         }
     }
 }
-
 @Composable
 private fun EventJoinedTextSection(
     title: String,
